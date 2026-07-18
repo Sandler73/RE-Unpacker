@@ -25,7 +25,7 @@
 #   python -m build
 #
 # Version
-#   0.4.9
+#   0.4.10
 # =============================================================================
 
 [build-system]
@@ -34,7 +34,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "re-unpacker"
-version = "0.4.9"
+version = "0.4.10"
 description = "Recursive package / installer / archive / binary extractor for RE triage"
 readme = "README.md"
 requires-python = ">=3.10"
