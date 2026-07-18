@@ -31,7 +31,7 @@
 #   - Does not alter your environment beyond the child process.
 #
 # VERSION
-#   0.4.9
+#   0.4.10
 # =============================================================================
 
 set -euo pipefail
