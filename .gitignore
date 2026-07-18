@@ -1,0 +1,86 @@
+# =============================================================================
+# re-unpacker -- .gitignore
+#
+# Synopsis
+#   Ignore build artifacts, caches, virtual environments, editor state, and
+#   re-unpacker run output so only source and documentation are tracked.
+# =============================================================================
+
+# ---- Python bytecode / caches ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# ---- Packaging / build ----
+build/
+dist/
+sdist/
+wheels/
+*.egg
+*.egg-info/
+.eggs/
+MANIFEST
+pip-wheel-metadata/
+
+# ---- Virtual environments ----
+.venv/
+venv/
+env/
+ENV/
+.python-version
+
+# ---- Test / coverage / typing caches ----
+.pytest_cache/
+.mypy_cache/
+.pyre/
+.pytype/
+.ruff_cache/
+.tox/
+.nox/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+nosetests.xml
+*.cover
+
+# ---- re-unpacker run output ----
+# Default extract-mode output directories carry the .unpacked suffix inside
+# a per-input output root. Ignore common scratch output names and the log
+# / manifest artifacts a run produces so field-test output never gets
+# committed by accident.
+*.unpacked/
+_quarantine/
+manifest.json
+manifest.jsonl
+extraction.log
+errors.log
+tree.txt
+summary.txt
+/out/
+/output/
+/scratch/
+*.re-unpacker/
+
+# ---- Local field-test artifacts ----
+# Test-run logs captured during Windows / Linux field testing.
+testrun*.txt
+*.local
+
+# ---- Editor / IDE / OS ----
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Secrets / local config (never commit) ----
+*.pem
+*.key
+.env
+.env.*
+!.env.example
