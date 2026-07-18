@@ -26,7 +26,7 @@ help see [SETUP_GUIDE.md](SETUP_GUIDE.md); for usage see
 Before diving into a specific symptom, gather the basics:
 
 ```bash
-re-unpacker --version          # confirm you are on 0.4.9
+re-unpacker --version          # confirm you are on 0.4.10
 re-unpacker --tools-check      # confirm the toolset is present
 re-unpacker --dry-run <input>  # confirm the file is being detected correctly
 ```
