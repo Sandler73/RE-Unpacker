@@ -2,38 +2,38 @@
 
 **Recursive package / installer / archive / binary extractor for reverse-engineering triage.**
 
-[![Version](https://img.shields.io/badge/version-0.4.9-blue.svg)](https://github.com/Sandler73/RE-Unpacker/blob/main/CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.4.10-blue.svg)](https://github.com/Sandler73/RE-Unpacker/blob/main/CHANGELOG.md)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20Windows-lightgrey.svg)](#install)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Runtime deps](https://img.shields.io/badge/runtime%20deps-none-brightgreen.svg)](pyproject.toml)
 
-**Current release: 0.4.9** -- a patch release implementing remediations from a principal-level code and documentation audit: the output-size ceiling is now preventive on POSIX (`RLIMIT_FSIZE` stops a decompression bomb mid-write), the `--max-files` ceiling is now actually enforced, Windows-only extractors gate correctly, and Windows downloads compute and can pin a SHA-256. No CLI or API surface change. See [CHANGELOG.md](CHANGELOG.md) for the complete, versioned history from 0.1.0 onward. The manifest schema is **1.1.0** and is byte-compatible across Linux and Windows.
+**Current release: 0.4.10** -- a patch release normalizing source headers across all 52 modules, synchronizing per-file version references with the framework version (now enforced by a test gate), and removing release annotations such as "added in vX.Y.Z" from code comments, docstrings, and documentation so they state fact-of behavior instead. No functional change. See [CHANGELOG.md](CHANGELOG.md) for the complete, versioned history from 0.1.0 onward. The manifest schema is **1.1.0** and is byte-compatible across Linux and Windows.
 
 Hand it a file or a directory and it will pull apart every package, installer, archive, filesystem image, compressed stream, and packed binary it can recognize -- recursively, until it hits bedrock -- and write a structured tree plus a manifest describing everything it found.
 
 Designed for the modified Kali Linux RE workflow on Linux and a winget-managed PowerShell workflow on Windows: zero external Python dependencies, all extraction is performed via well-known system binaries.
 
-| At a glance (v0.4.0) | Count |
+| At a glance | Count |
 |---|---|
-| **Platforms supported (NEW)** | **2** (Linux + Windows) |
+| Platforms supported | 2 (Linux, Windows) |
 | Tracked external tools (Linux) | 93 |
-| Tracked external tools (Windows, NEW) | 56 |
+| Tracked external tools (Windows) | 56 |
 | Tools with version-probe coverage | 93 Linux / 56 Windows (full both) |
 | Protected tools / packages | 2 / 2 |
 | Known-unavailable packages (Linux) | 1 (libfsfat-utils) |
-| Known-unavailable packages (Windows, NEW) | 14 (libyal binaries, signtool, etc.) |
+| Known-unavailable packages (Windows) | 14 (libyal binaries, signtool, and similar) |
 | FileKind enum entries | 78 |
 | Extractable kinds | 70 (parity on both platforms) |
 | Primary kinds dispatchable | 70 |
 | Registered extractor classes (primary + secondary) | 69 (66 primary + 3 secondary) |
 | Root/admin-required extractors | 11 (Linux FUSE only) |
 | Terminal-classify kinds (encrypted, no recursion) | 3 |
-| **Verifiers (NEW: +2 Windows-native)** | **9** (gpgv, debsigs, dpkg-sig, debsums, rpm-K, apksigner, osslsigncode, **powershell-authenticode**, **signtool**) |
+| Verifiers | 9 (gpgv, debsigs, dpkg-sig, debsums, rpm-K, apksigner, osslsigncode, powershell-authenticode, signtool) |
 | Classifiers | 4 (entropy, fuzzy_hash, exif, yara) |
 | Python bindings tracked | 3 (tlsh, yara, ssdeep) |
-| Package manager backends | 2 (apt + **winget**, NEW) |
-| Wrappers shipped | 3 (bash + **PowerShell** + **cmd**, NEW: 2) |
+| Package manager backends | 2 (apt, winget) |
+| Wrappers shipped | 3 (bash, PowerShell, cmd) |
 | Hard size cap (classifier passes) | 256 MiB (verifiers exempt) |
 | Default per-pass enrichment timeout | 30 seconds |
 | YARA default rule directories | 3 (per-platform: Linux paths or Windows %PROGRAMDATA% / %APPDATA% paths) |
@@ -42,7 +42,7 @@ Designed for the modified Kali Linux RE workflow on Linux and a winget-managed P
 | CLI flags (argparse actions) | 37 |
 | FileEntry fields | 25 |
 | RunStats counters | 20 |
-| **Manifest schema version** | **1.1.0 (UNCHANGED -- byte-identical Linux/Windows manifests)** |
+| Manifest schema version | 1.1.0 (byte-identical Linux / Windows manifests) |
 
 **HTML companion documentation:** richly-formatted README and Usage Guide live in `docs/`:
 
@@ -101,7 +101,7 @@ Both are self-contained (no external CSS / JS / fonts) and render in any browser
 |  | ELF sections (`.text`, `.rodata`, `.data`, `.note.*` …) | `objcopy` + `readelf` (**secondary**) | -- |
 | Last resort | unknown binaries with embedded signatures | `binwalk -Me` | -- |
 |  |  |  |  |
-| **v0.2.0 additions** | `.arj` | `arj` | -- |
+| **Extended and legacy archives** | `.arj` | `arj` | -- |
 |  | `.lha` / `.lzh` | `lha` (lhasa) | `unar` |
 |  | `.lz` (lzip single stream) | `lzip -d -c` | -- |
 |  | `.tar.lz` / `.tlz` | `lzip -d \| tar -xf -` (pipeline) | -- |
@@ -115,7 +115,7 @@ Both are self-contained (no external CSS / JS / fonts) and render in any browser
 |  | `.alz` (Korean ALZ) | `unar` | -- |
 |  | `.ace` | `unar` | -- |
 |  |  |  |  |
-| **v0.3.0 additions** | PDF (with attachments) | `pdfdetach -saveall` | -- |
+| **Documents, disk images, and filesystems** | PDF (with attachments) | `pdfdetach -saveall` | -- |
 |  | PDF (structure / streams) | `qpdf --qdf` | -- |
 |  | `.apk` (Android package, decoded) | `apktool d` | `unzip` (raw fallback at priority 80) |
 |  | `.vmdk` (VMware) | `vmdkmount` (FUSE, root) | `qemu-img convert` (no root) |
@@ -133,7 +133,7 @@ Both are self-contained (no external CSS / JS / fonts) and render in any browser
 |  | `.kwaj` / `.szdd` (MS DOS-era) | `msexpand` | -- |
 |  | macOS binary plist (BPLIST) | `plistutil -i -o -f xml` (secondary) | (terminal kind, no primary) |
 |  |  |  |  |
-| **v0.3.0 terminal-classify** | LUKS encrypted volumes | (none -- classify only, kind=LUKS_ENCRYPTED) | -- |
+| **Terminal-classify (no recursion)** | LUKS encrypted volumes | (none -- classify only, kind=LUKS_ENCRYPTED) | -- |
 |  | Encrypted RAR/7z/DMG | (none -- classify only, kind=ENCRYPTED_GENERIC) | -- |
 
 "Secondary" extractors run in addition to (not instead of) the primary extraction, and their output lands in a sibling `_secondary_<name>/` directory inside the unpack folder.
@@ -163,7 +163,7 @@ sudo apt-get install -y \
     poppler-utils qemu-utils qpdf
 ```
 
-On full Kali installs, the libyal `lib*-utils` packages ship the FUSE `*mount` binaries needed for v0.3.0's forensic-filesystem extractors. On Ubuntu and minimal Debian installs, only the `*info` companions ship; the FUSE-mount-based extractors will be silently filtered as unavailable (run `re-unpacker --tools-check` to see the gap).
+On full Kali installs, the libyal `lib*-utils` packages ship the FUSE `*mount` binaries needed for the forensic-filesystem extractors. On Ubuntu and minimal Debian installs, only the `*info` companions ship; the FUSE-mount-based extractors will be silently filtered as unavailable (run `re-unpacker --tools-check` to see the gap).
 
 Or simpler -- let re-unpacker install everything for you (see `--install` in the [Modes](#modes) section below):
 
@@ -184,7 +184,7 @@ chmod +x re-unpacker
 
 The `re-unpacker` wrapper adds `src/` to `PYTHONPATH` and invokes `python3 -m re_unpacker`. Drop a symlink into `~/.local/bin/` if you want it on your `PATH`.
 
-### Installing on Windows (v0.4.0)
+### Installing on Windows
 
 Same source tree, different package manager. Two choices for invocation:
 
@@ -319,7 +319,7 @@ sudo re-unpacker --install --yes --no-refresh-index
 
 Hitting any of these aborts further extraction with `SafetyLimitExceeded` and exit code 2, but the manifest and logs written so far are preserved.
 
-### Enrichment (v0.3.2)
+### Enrichment
 
 After extraction completes, the orchestrator runs a per-file enrichment phase: signature/integrity verifiers (Subsystem B) plus classification passes (Subsystem C). Verifiers run on every file regardless of size; classifiers honor a hard 256 MiB cap (files above the cap record `enrichment_skipped="size_exceeds_cap"` and skip all classifier passes).
 
@@ -349,7 +349,7 @@ After extraction completes, the orchestrator runs a per-file enrichment phase: s
 | `gpgv` | gpgv | Any file with sibling `.sig` / `.asc` |
 | `debsigs` | debsigs | DEB |
 | `dpkg-sig` | dpkg-sig | DEB |
-| `debsums` | debsums | DEB (DISABLED in v0.3.2 -- debsums operates on installed packages, not .deb files at rest. Tracked for tooling but never invoked.) |
+| `debsums` | debsums | DEB (DISABLED -- debsums operates on installed packages, not .deb files at rest. Tracked for tooling but never invoked.) |
 | `rpm-K` | rpm | RPM |
 | `apksigner` | apksigner | APK |
 | `osslsigncode` | osslsigncode | PE_EXECUTABLE / PE_NSIS / PE_INNOSETUP / PE_INSTALLSHIELD / PE_WIXBURN / MSI / CAB |
@@ -363,7 +363,7 @@ After extraction completes, the orchestrator runs a per-file enrichment phase: s
 | `exif` | `exiftool` | `exif_metadata` (per-value 4096-char cap) |
 | `yara` | `python3-yara` | `yara_matches` (list of rule_name / namespace / tags / meta dicts) |
 
-### Logging (v0.3.1)
+### Logging
 
 ```bash
 # Console log level (file log always records DEBUG)
@@ -499,7 +499,7 @@ One per file the orchestrator looked at (both extracted and pass-through):
   "mode":                    "0755",
   "mtime":                   "2026-04-21T17:48:28Z",
   "signals":                 ["magic:ELF", "file_desc:ELF …", "mime:…", "ext:"],
-  // -------- v0.3.2 (schema 1.1.0) additions, all optional --------
+  // -------- schema 1.1.0 additions, all optional --------
   "ssdeep":                  "768:abc...:xyz",          // null when not computed
   "tlsh":                    "T1A2B3C4...",              // null below TLSH min size / diversity
   "entropy":                 7.823,                       // bits/byte, range 0.0--8.0
