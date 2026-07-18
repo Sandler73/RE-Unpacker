@@ -1,4 +1,4 @@
-# Contributing to re-unpacker
+# Contributing to RE-Unpacker
 
 Thanks for your interest in improving re-unpacker. This document explains how
 to set up a development environment, how the codebase is organized, the
@@ -27,7 +27,7 @@ requests.
 
 ## Ground rules
 
-- **Security first.** re-unpacker processes untrusted, often malicious input.
+- **Security first.** RE-Unpacker processes untrusted, often malicious input.
   Every subprocess call is an `argv` list; never build a command string from a
   filename, and never pass `shell=True`. New code must respect the timeout,
   bounded-output-capture, quota, and path-traversal-audit machinery already in
@@ -45,7 +45,7 @@ requests.
 
 ## Development setup
 
-re-unpacker targets Python 3.10 or newer and has no runtime Python
+RE-Unpacker targets Python 3.10 or newer and has no runtime Python
 dependencies. Clone the repository and run straight from the tree, or install
 in editable mode.
 
@@ -58,7 +58,7 @@ cd re-unpacker
 
 # Option B: editable install into a virtual environment.
 python3 -m venv .venv
-source .venv/bin/activate           # Windows: .venv\Scripts\Activate.ps1
+source .venv/bin/activate # Windows: .venv\Scripts\Activate.ps1
 pip install -e .
 re-unpacker --version
 ```
@@ -71,7 +71,7 @@ pip install pytest ruff mypy
 
 The extraction tools themselves (dpkg-deb, 7-Zip, binwalk, and so on) are
 installed via the system package manager. On a fresh Kali / Debian / Ubuntu
-box you can let re-unpacker provision them:
+box you can let RE-Unpacker provision them:
 
 ```bash
 sudo ./re-unpacker --install --yes
@@ -84,26 +84,26 @@ provisioning instructions.
 
 ```text
 src/re_unpacker/
-  cli.py                 CLI surface, argument parsing, mode dispatch
-  orchestrator.py        RecursiveUnpacker: BFS work queue, dedup, dispatch
-  detection.py           FileKind enum + three-layer detect_file()
-  constants.py           version, schema, tool package hints, magic table
-  tools.py               ToolRegistry: probe/version external binaries
-  pkg_manager.py         apt (Linux) and winget (Windows) install backends
-  manual_install_windows.py   per-tool auto-install handlers for Windows
-  platform_compat.py     OS detection, cache/config dirs, PATH probing
-  safety.py              path-traversal audit, quota tracker, hashing
-  manifest.py            ManifestBuilder, FileEntry, ErrorEntry, RunStats
-  reporting.py           tree.txt and summary.txt generation
-  logging_setup.py       dual console/file logging configuration
-  subprocess_utils.py    argv-only subprocess execution, BOM-aware decoding
-  exceptions.py          exception hierarchy
-  extractors/            one module per format family; base.py has the registry
-  verifiers/             signature/integrity verifiers; base.py has the registry
-  classifiers/           enrichment passes; base.py has the registry
-docs/                    Markdown guides + HTML companions
-tests/                   pytest suite
-wiki/                    mirrored wiki pages (parity with docs/)
+  cli.py CLI surface, argument parsing, mode dispatch
+  orchestrator.py RecursiveUnpacker: BFS work queue, dedup, dispatch
+  detection.py FileKind enum + three-layer detect_file()
+  constants.py version, schema, tool package hints, magic table
+  tools.py ToolRegistry: probe/version external binaries
+  pkg_manager.py apt (Linux) and winget (Windows) install backends
+  manual_install_windows.py per-tool auto-install handlers for Windows
+  platform_compat.py OS detection, cache/config dirs, PATH probing
+  safety.py path-traversal audit, quota tracker, hashing
+  manifest.py ManifestBuilder, FileEntry, ErrorEntry, RunStats
+  reporting.py tree.txt and summary.txt generation
+  logging_setup.py dual console/file logging configuration
+  subprocess_utils.py argv-only subprocess execution, BOM-aware decoding
+  exceptions.py exception hierarchy
+  extractors/ one module per format family; base.py has the registry
+  verifiers/ signature/integrity verifiers; base.py has the registry
+  classifiers/ enrichment passes; base.py has the registry
+docs/ Markdown guides + HTML companions
+tests/ pytest suite
+wiki/ mirrored wiki pages (parity with docs/)
 ```
 
 The orchestrator does not hardcode any format. It asks the registries what can
@@ -209,7 +209,7 @@ Documentation is part of the change, not a follow-up. When behavior changes:
 - Update the relevant `docs/` guide and its mirrored `wiki/` page together so
   they stay at parity.
 - Add a dated, described entry to [`CHANGELOG.md`](CHANGELOG.md) following Keep
-  a Changelog and Semantic Versioning.
+  a Changelog, with odometer versioning (see below).
 - Keep the README's counts and schema notes accurate.
 
 Read the existing document first and edit in place, preserving structure and
