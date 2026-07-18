@@ -1,0 +1,54 @@
+name: Feature request
+description: Propose a new capability or improvement
+title: "[feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Propose new capability here. If you are proposing support for a new
+        file format, please include the format's magic signature and the tool
+        that extracts it.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: What are you trying to do that re-unpacker cannot do today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What should re-unpacker do?
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - New file format / extractor
+        - New verifier
+        - New classifier
+        - CLI / usability
+        - Packaging / install
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: format-details
+    attributes:
+      label: Format details (if proposing a new format)
+      description: |
+        Magic signature (bytes and offset), file extension, and the external
+        tool that extracts it. Cite the format specification if possible.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context

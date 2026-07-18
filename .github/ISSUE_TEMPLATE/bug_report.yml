@@ -1,0 +1,86 @@
+name: Bug report
+description: Report a defect in re-unpacker
+title: "[bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing a bug. Please do NOT report security vulnerabilities
+        here. See SECURITY.md for private reporting instead. Do not attach live
+        malware; describe the input or provide a synthetic reproducer.
+  - type: input
+    id: version
+    attributes:
+      label: re-unpacker version
+      description: Output of `re-unpacker --version`.
+      placeholder: re-unpacker 0.4.8
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - Linux (Kali)
+        - Linux (Debian)
+        - Linux (Ubuntu)
+        - Linux (other)
+        - Windows 10
+        - Windows 11
+        - macOS
+    validations:
+      required: true
+  - type: input
+    id: python
+    attributes:
+      label: Python version
+      description: Output of `python --version`.
+      placeholder: Python 3.12.3
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command run
+      description: The exact command you invoked.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened, including any traceback or exit code.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: |
+        Excerpt from extraction.log or errors.log. Redact sensitive paths.
+      render: shell
+  - type: textarea
+    id: input
+    attributes:
+      label: Input description or reproducer
+      description: |
+        Describe the input (kind, source), or provide a synthetic reproducer.
+        Do not attach live malware.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-submission checks
+      options:
+        - label: I ran `re-unpacker --tools-check` and included relevant results.
+          required: false
+        - label: This is not a security vulnerability (those go through SECURITY.md).
+          required: true
