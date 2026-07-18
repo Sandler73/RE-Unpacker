@@ -29,7 +29,7 @@ REM    - Requires Python 3.10+ on PATH (python or python3).
 REM    - Does not alter your PYTHONPATH outside this child process.
 REM
 REM  VERSION
-REM    0.4.9
+REM    0.4.10
 REM ============================================================================
 
 setlocal enableextensions
