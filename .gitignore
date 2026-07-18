@@ -2,56 +2,167 @@
 # re-unpacker -- .gitignore
 #
 # Synopsis
-#   Ignore build artifacts, caches, virtual environments, editor state, and
-#   re-unpacker run output so only source and documentation are tracked.
+#   Ignore build artifacts, caches, virtual environments, editor and OS state,
+#   credentials, and re-unpacker run output so that only source, tests, and
+#   documentation are tracked.
+#
+# Description
+#   The project ships Python (the package), Bash (the ./re-unpacker wrapper),
+#   PowerShell (re-unpacker.ps1), and cmd (re-unpacker.cmd) entry points, and
+#   is developed on both Linux and Windows. This file therefore covers all of
+#   those ecosystems rather than Python alone, so that a contributor working
+#   from either platform in any of those shells cannot accidentally commit
+#   local state, transient tool output, or analysis artifacts.
+#
+# Notes
+#   - Extracted content is never tracked. re-unpacker output frequently
+#     contains malware samples, so the run-output rules below are a safety
+#     control, not just hygiene.
+#   - Negation rules (lines beginning with "!") re-include files that a
+#     broader rule above would otherwise hide. Keep them after their rule.
 # =============================================================================
 
-# ---- Python bytecode / caches ----
+# -----------------------------------------------------------------------------
+# Python: bytecode, caches, and extension builds
+# -----------------------------------------------------------------------------
 __pycache__/
-*.py[cod]
+*.py[codz]
 *$py.class
 *.so
+*.dylib
+*.pyd
+cython_debug/
+*.c.orig
 
-# ---- Packaging / build ----
+# -----------------------------------------------------------------------------
+# Python: packaging and build output
+# -----------------------------------------------------------------------------
 build/
+develop-eggs/
 dist/
+downloads/
+eggs/
+.eggs/
 sdist/
 wheels/
-*.egg
+share/python-wheels/
+parts/
+lib64/
+var/
 *.egg-info/
-.eggs/
+*.egg
+.installed.cfg
 MANIFEST
+pip-log.txt
+pip-delete-this-directory.txt
 pip-wheel-metadata/
 
-# ---- Virtual environments ----
+# -----------------------------------------------------------------------------
+# Python: virtual environments and interpreter pinning
+# -----------------------------------------------------------------------------
 .venv/
 venv/
 env/
 ENV/
+env.bak/
+venv.bak/
 .python-version
+pyvenv.cfg
+Pipfile.lock
+poetry.lock
+pdm.lock
+uv.lock
 
-# ---- Test / coverage / typing caches ----
+# -----------------------------------------------------------------------------
+# Python: test, coverage, typing, and lint caches
+# -----------------------------------------------------------------------------
 .pytest_cache/
+.cache/
+.tox/
+.nox/
 .mypy_cache/
+.dmypy.json
+dmypy.json
 .pyre/
 .pytype/
 .ruff_cache/
-.tox/
-.nox/
 htmlcov/
 .coverage
 .coverage.*
 coverage.xml
+coverage.json
 nosetests.xml
 *.cover
+*.py.orig
+.hypothesis/
+test-results/
+junit*.xml
 
-# ---- re-unpacker run output ----
-# Default extract-mode output directories carry the .unpacked suffix inside
-# a per-input output root. Ignore common scratch output names and the log
-# / manifest artifacts a run produces so field-test output never gets
-# committed by accident.
+# -----------------------------------------------------------------------------
+# PowerShell
+# -----------------------------------------------------------------------------
+# Module build output, transcripts, saved credentials, and analyzer results.
+*.psd1.bak
+*.ps1.bak
+*.ps1xml.bak
+PowerShell_transcript.*.txt
+*.clixml
+*.credential
+PSScriptAnalyzerResults.*
+.psscriptanalyzer/
+*.pssproj.user
+
+# -----------------------------------------------------------------------------
+# Bash / POSIX shell
+# -----------------------------------------------------------------------------
+*.sh.bak
+*.bash_history
+.bash_history
+.sh_history
+.zsh_history
+*.swp.sh
+shellcheck-report.*
+.shellcheckrc.local
+nohup.out
+core
+core.[0-9]*
+
+# -----------------------------------------------------------------------------
+# Windows cmd / batch
+# -----------------------------------------------------------------------------
+*.bat.bak
+*.cmd.bak
+*.log.bat
+*.err
+*.out.bat
+
+# -----------------------------------------------------------------------------
+# Compiled, linked, and packaged binaries
+# -----------------------------------------------------------------------------
+*.o
+*.obj
+*.a
+*.lib
+*.dll
+*.exe
+*.out
+*.app
+*.pdb
+*.ilk
+*.exp
+*.class
+*.jar
+
+# -----------------------------------------------------------------------------
+# re-unpacker run output
+# -----------------------------------------------------------------------------
+# Every directory re-unpacker creates carries the .unpacked suffix, and each
+# run emits a manifest, logs, and reports into its output root. Extracted
+# content may be malicious and must never be committed.
 *.unpacked/
+*.re-unpacker/
 _quarantine/
+_secondary_*/
 manifest.json
 manifest.jsonl
 extraction.log
@@ -60,27 +171,158 @@ tree.txt
 summary.txt
 /out/
 /output/
+/outputs/
 /scratch/
-*.re-unpacker/
+/samples/
+/artifacts/
 
-# ---- Local field-test artifacts ----
-# Test-run logs captured during Windows / Linux field testing.
+# -----------------------------------------------------------------------------
+# Analysis inputs and local field-test artifacts
+# -----------------------------------------------------------------------------
+# Never track samples or captured test runs. These frequently contain live
+# malware or customer data.
+*.sample
+*.malware
 testrun*.txt
+*.testrun
 *.local
 
-# ---- Editor / IDE / OS ----
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
-Thumbs.db
-desktop.ini
+# Archives are ignored by default because they are almost always analysis
+# input or a build artifact rather than source.
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.tar.bz2
+*.tar.xz
+*.tar.zst
+*.7z
+*.rar
+*.gz
+*.bz2
+*.xz
+*.zst
+*.cab
+*.iso
+*.dmg
+*.deb
+*.rpm
+*.msi
+*.apk
+*.vmdk
+*.qcow2
+*.vhd
+*.vhdx
 
-# ---- Secrets / local config (never commit) ----
-*.pem
-*.key
+# -----------------------------------------------------------------------------
+# Secrets and credentials (never commit)
+# -----------------------------------------------------------------------------
 .env
 .env.*
 !.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.gpg
+*.asc
+!**/docs/**/*.asc
+secrets.*
+credentials.*
+.netrc
+.pypirc
+id_rsa*
+id_ed25519*
+*.ovpn
+
+# -----------------------------------------------------------------------------
+# Editors and IDEs
+# -----------------------------------------------------------------------------
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.iml
+*.ipr
+*.iws
+*.sublime-project
+*.sublime-workspace
+.spyderproject
+.spyproject
+.ropeproject
+*.swp
+*.swo
+*.swn
+*~
+.\#*
+\#*\#
+.vim/
+.nvim/
+tags
+TAGS
+cscope.out
+
+# -----------------------------------------------------------------------------
+# Jupyter / interactive
+# -----------------------------------------------------------------------------
+.ipynb_checkpoints/
+*.ipynb_convert*
+profile_default/
+ipython_config.py
+
+# -----------------------------------------------------------------------------
+# Operating-system metadata
+# -----------------------------------------------------------------------------
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+desktop.ini
+$RECYCLE.BIN/
+*.lnk
+*.stackdump
+# macOS
+.DS_Store
+.DS_Store?
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+.TemporaryItems
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+# Linux
+.directory
+.Trash-*
+.nfs*
+.fuse_hidden*
+
+# -----------------------------------------------------------------------------
+# Documentation build output
+# -----------------------------------------------------------------------------
+docs/_build/
+docs/_static/generated/
+site/
+.sphinx/
+*.pdf.tmp
+
+# -----------------------------------------------------------------------------
+# Node (only if tooling is added later; harmless otherwise)
+# -----------------------------------------------------------------------------
+node_modules/
+npm-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# -----------------------------------------------------------------------------
+# Local overrides
+# -----------------------------------------------------------------------------
+# A place for contributors to keep machine-specific settings without needing
+# to modify this file.
+*.local.*
+.local/
