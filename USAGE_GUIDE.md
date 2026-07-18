@@ -6,7 +6,7 @@ flag, and the common workflows. For installation see
 [TROUBLESHOOTING_GUIDE.md](TROUBLESHOOTING_GUIDE.md); for conceptual questions
 see [FAQ.md](FAQ.md).
 
-re-unpacker is at version 0.4.9 and writes a manifest at schema 1.1.0.
+re-unpacker is at version 0.4.10 and writes a manifest at schema 1.1.0.
 
 ## Table of contents
 
