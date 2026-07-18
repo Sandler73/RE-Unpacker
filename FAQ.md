@@ -30,7 +30,7 @@ byte-compatible across platforms.
 
 ### What is the current version?
 
-0.4.9. The manifest schema is 1.1.0. See [CHANGELOG.md](../CHANGELOG.md) for the
+0.4.10. The manifest schema is 1.1.0. See [CHANGELOG.md](../CHANGELOG.md) for the
 full history.
 
 ## Scope and formats
