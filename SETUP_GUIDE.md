@@ -1,11 +1,11 @@
-# re-unpacker Setup Guide
+# RE-Unpacker Setup Guide
 
-This guide covers installing re-unpacker and provisioning the external
+This guide covers installing RE-Unpacker and provisioning the external
 extraction tools on Linux and Windows. For day-to-day use see
 [USAGE_GUIDE.md](USAGE_GUIDE.md); for problems see
 [TROUBLESHOOTING_GUIDE.md](TROUBLESHOOTING_GUIDE.md).
 
-re-unpacker has **no runtime Python dependencies**. It is pure standard-library
+RE-Unpacker has **no runtime Python dependencies**. It is pure standard-library
 Python that drives external system binaries for the actual extraction. Setup
 therefore has two parts: getting the tool itself runnable, and provisioning the
 extraction binaries.
@@ -49,7 +49,7 @@ The `re-unpacker` wrapper prepends the bundled `src/` to `PYTHONPATH` and runs
 `~/.local/bin/`, or install the package:
 
 ```bash
-pip install -e .        # editable install; adds a 're-unpacker' console script
+pip install -e . # editable install; adds a 're-unpacker' console script
 re-unpacker --version
 ```
 
@@ -61,7 +61,7 @@ Same source tree, two launchers:
 # PowerShell wrapper (preferred):
 .\re-unpacker.ps1 --version
 
-# cmd.exe shim (for restricted-execution-policy environments):
+# Cmd.exe shim (for restricted-execution-policy environments):
 re-unpacker.cmd --version
 ```
 
@@ -70,16 +70,16 @@ If Python is not found, install it with `winget install Python.Python.3.12`
 
 ## Linux tool provisioning
 
-Let re-unpacker tell you exactly what is missing:
+Let RE-Unpacker tell you exactly what is missing:
 
 ```bash
 re-unpacker --tools-check
 ```
 
-Then either install everything it flags in one shot, or let re-unpacker do it:
+Then either install everything it flags in one shot, or let RE-Unpacker do it:
 
 ```bash
-# re-unpacker drives apt for you (requires root):
+# RE-Unpacker drives apt for you (requires root):
 sudo re-unpacker --install --yes
 ```
 
@@ -106,7 +106,7 @@ Notes:
   minimal Debian, only the `*info` companions ship, so the FUSE-mount extractors
   are silently filtered as unavailable. Run `--tools-check` to see the gap.
 - `libfsfat-utils` is not currently packaged for Debian / Kali / Ubuntu stable.
-  re-unpacker knows this and drops it cleanly from an install batch with an
+  RE-Unpacker knows this and drops it cleanly from an install batch with an
   informative message; `mtools` provides a partial FAT fallback.
 - The `apt` and `dpkg` packages are protected: `--uninstall` and `--repair`
   will never remove them.
@@ -148,12 +148,12 @@ manifest schema.
 
 ### A note on PATH on Windows
 
-re-unpacker installs its manual-install tools to
+RE-Unpacker installs its manual-install tools to
 `C:\Program Files\re-unpacker\bin\` and adds that directory to the system PATH,
 but only if doing so keeps PATH under the Windows-safe length threshold. If your
-system PATH is already near the legacy 2047-character limit, re-unpacker skips
+system PATH is already near the legacy 2047-character limit, RE-Unpacker skips
 the registry write (to avoid the modal "PATH env variable too big" dialog) and
-prints a diagnostic with cleanup guidance. re-unpacker still finds its own
+prints a diagnostic with cleanup guidance. RE-Unpacker still finds its own
 tools regardless, because it probes its install directory directly. See the
 [Troubleshooting Guide](TROUBLESHOOTING_GUIDE.md) for the cleanup procedure.
 
@@ -173,7 +173,7 @@ re-unpacker --dry-run ./some-samples
 A healthy `--tools-check` on Linux shows the full 93-tool inventory with paths
 and versions; on Windows it shows the 56-tool inventory. Missing tools are not
 fatal: the orchestrator filters unavailable extractors and continues, so you can
-run re-unpacker with a partial toolset and still extract everything your
+run RE-Unpacker with a partial toolset and still extract everything your
 installed tools support.
 
 ## Optional Python bindings
@@ -192,9 +192,9 @@ absent, the pass records that it was not performed.
 
 ## YARA rules
 
-When you do not pass `--yara-rules PATH`, re-unpacker auto-discovers rules from
+When you do not pass `--yara-rules PATH`, RE-Unpacker auto-discovers rules from
 its default directories as a namespaced union. On Linux these are the system
-YARA directory, the per-user re-unpacker config directory, and the YARA Forge
+YARA directory, the per-user RE-Unpacker config directory, and the YARA Forge
 default location; on Windows the equivalents under `%PROGRAMDATA%` and
 `%APPDATA%`. Drop `.yar` / `.yara` files into any of them, or point at a
 specific file or directory with `--yara-rules`.
