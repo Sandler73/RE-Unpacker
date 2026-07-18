@@ -50,7 +50,7 @@
 .NOTES
     Requires Python 3.10+ on PATH.
     Author: Anthropic / re-unpacker contributors.
-    Version: 0.4.9
+    Version: 0.4.10
 
 .LINK
     See README.md and ReUnpacker-Usage-Guide.html for full documentation.
