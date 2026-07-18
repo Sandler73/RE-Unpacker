@@ -1,12 +1,27 @@
+<div align="center">
+
 # re-unpacker
 
 **Recursive package / installer / archive / binary extractor for reverse-engineering triage.**
 
-[![Version](https://img.shields.io/badge/version-0.4.10-blue.svg)](https://github.com/Sandler73/RE-Unpacker/blob/main/CHANGELOG.md)
+<!-- Dynamic status badges: these reflect live repository state. -->
+[![CI](https://github.com/Sandler73/RE-Unpacker/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Sandler73/RE-Unpacker/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/Sandler73/RE-Unpacker/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/Sandler73/RE-Unpacker/actions/workflows/codeql.yml)
+[![Release](https://img.shields.io/github/v/release/Sandler73/RE-Unpacker?display_name=tag&sort=semver)](https://github.com/Sandler73/RE-Unpacker/releases)
+[![Last commit](https://img.shields.io/github/last-commit/Sandler73/RE-Unpacker)](https://github.com/Sandler73/RE-Unpacker/commits/main)
+[![Open issues](https://img.shields.io/github/issues/Sandler73/RE-Unpacker)](https://github.com/Sandler73/RE-Unpacker/issues)
+
+<!-- Project characteristic badges. -->
+[![Version](https://img.shields.io/badge/version-0.4.10-blue.svg)](CHANGELOG.md)
+[![Manifest schema](https://img.shields.io/badge/manifest%20schema-1.1.0-blue.svg)](#manifest-schema)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20Windows-lightgrey.svg)](#install)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![License](https://img.shields.io/github/license/Sandler73/RE-Unpacker?color=green)](LICENSE)
 [![Runtime deps](https://img.shields.io/badge/runtime%20deps-none-brightgreen.svg)](pyproject.toml)
+[![Code style](https://img.shields.io/badge/lint-ruff-black.svg)](https://docs.astral.sh/ruff/)
+[![Formats](https://img.shields.io/badge/formats-70%20extractable%20kinds-blue.svg)](#supported-formats)
+
+</div>
 
 **Current release: 0.4.10** -- a patch release normalizing source headers across all 52 modules, synchronizing per-file version references with the framework version (now enforced by a test gate), and removing release annotations such as "added in vX.Y.Z" from code comments, docstrings, and documentation so they state fact-of behavior instead. No functional change. See [CHANGELOG.md](CHANGELOG.md) for the complete, versioned history from 0.1.0 onward. The manifest schema is **1.1.0** and is byte-compatible across Linux and Windows.
 
