@@ -10,6 +10,58 @@ was created, so historical entries are listed by version in descending order
 without a release date. The descriptive text after each version number
 summarizes the release theme. Future entries will carry ISO-8601 dates.
 
+## [0.4.10] - Patch release (source-header normalization and removal of release annotations)
+
+Documentation and comment hygiene across the whole source tree. No functional
+change: the executable code is byte-for-byte equivalent apart from four
+user-facing strings that carried release annotations. Verified by comparing the
+AST of every module before and after with docstrings stripped.
+
+**Module headers are now uniform and complete.** All 52 package modules carry
+the same header skeleton: a ``.. module::`` directive with ``:synopsis:``, then
+``Description``, ``Notes``, and ``Version`` sections. Previously the directive
+was missing from 2 modules, ``Description`` from 1, ``Notes`` from 12, and
+``extractors/__init__.py`` had no module docstring at all;
+``manual_install_windows.py`` used a nonconforming banner style. The 12 missing
+``Notes`` sections were written with substantive, module-specific content
+(dispatch ordering, trust-model caveats, platform behavior) rather than filler.
+
+**Per-file versions are synchronized and enforced.** Module header versions had
+drifted into a mix of "See :data:`...VERSION`.", "Added in 0.3.2.", "v0.4.4 --
+initial implementation", and two variant reference spellings. Every header now
+states the framework version in one canonical form. A new test
+(``tests/test_headers.py``) asserts each header version equals
+``constants.VERSION``, so a release bump that misses a file now fails the build
+instead of silently drifting.
+
+**Release annotations removed.** Roughly 100 occurrences of "added in vX.Y.Z",
+"part of vX.Y.Z", "(vX.Y.Z)", "# vX.Y.Z:", "vX.Y.Z additions", and the
+release-relative markers "NEW" and "UNCHANGED" were removed from comments,
+docstrings, user-facing strings, and documentation. Comments now state fact-of
+behavior, utility, and purpose. Version history lives in this changelog, which
+is its proper home. Four user-facing strings were included: the argparse group
+title ``"Enrichment (v0.3.2)"``, two ``summary.txt`` section headings, and a
+tool-hint message.
+
+Deliberately preserved: manifest **schema** version references (1.0.0 vs 1.1.0),
+which are a live data contract that manifest consumers must branch on rather
+than build history; and lesson (L##) / issue (ISS-###) identifiers, which are
+engineering provenance mapping to the project ledger.
+
+**Documentation.** Release-keyed table groupings in the README and wiki were
+renamed to describe what they contain ("Extended and legacy archives",
+"Documents, disk images, and filesystems", "Terminal-classify (no recursion)"),
+and release-annotated section headings were made plain.
+
+**Tooling.** Added ``tools/normalize_headers.py``, which applies these
+conventions in bulk. It rewrites comment and docstring tokens only, walking the
+file with :mod:`tokenize` so executable code can never be altered by a prose
+regex.
+
+**Tests.** 293 pass. ``tests/test_headers.py`` adds parametrized per-module
+gates for header structure, version synchronization, and absence of release
+annotations in comments, docstrings, and runtime strings.
+
 ## [0.4.9] - Patch release (audit remediations: resource-safety, platform gating, download integrity)
 
 Addresses findings from a principal-level code and documentation audit. No
@@ -785,6 +837,7 @@ The production target is Kali Linux. Full Kali installs ship the upstream libyal
 
 ## [0.1.0] - initial release
 
+[0.4.10]: https://github.com/Sandler73/RE-Unpacker/releases/tag/v0.4.10
 [0.4.9]: https://github.com/Sandler73/RE-Unpacker/releases/tag/v0.4.9
 [0.4.8]: https://github.com/Sandler73/RE-Unpacker/releases/tag/v0.4.8
 [0.4.7]: https://github.com/Sandler73/RE-Unpacker/releases/tag/v0.4.7
