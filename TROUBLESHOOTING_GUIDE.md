@@ -1,4 +1,4 @@
-# re-unpacker Troubleshooting Guide
+# RE-Unpacker Troubleshooting Guide
 
 Symptom-to-fix playbooks for common problems, plus exit-code triage. For install
 help see [SETUP_GUIDE.md](SETUP_GUIDE.md); for usage see
@@ -26,9 +26,9 @@ help see [SETUP_GUIDE.md](SETUP_GUIDE.md); for usage see
 Before diving into a specific symptom, gather the basics:
 
 ```bash
-re-unpacker --version          # confirm you are on 0.4.10
-re-unpacker --tools-check      # confirm the toolset is present
-re-unpacker --dry-run <input>  # confirm the file is being detected correctly
+re-unpacker --version # confirm you are on 0.5.0
+re-unpacker --tools-check # confirm the toolset is present
+re-unpacker --dry-run <input> # confirm the file is being detected correctly
 ```
 
 Re-run the failing command with `-vv` (DEBUG) so the console shows the full
@@ -69,7 +69,7 @@ extractor was filtered out.
 ## A tool shows as missing
 
 `--tools-check` reports a tool as MISSING when its binary is not found on PATH
-(and, on Windows, not found in the well-known install directories re-unpacker
+(and, on Windows, not found in the well-known install directories RE-Unpacker
 probes).
 
 - **Linux:** install the package. `--tools-check` prints the exact apt package
@@ -123,10 +123,10 @@ qemu-img conversion path) are used instead.
 
 If you see a modal Windows dialog reading "PATH env variable too big", your
 system PATH has grown past the legacy 2047-character REG_SZ limit, usually from
-cumulative additions across many installs (not just re-unpacker's).
+cumulative additions across many installs (not just RE-Unpacker's).
 
-re-unpacker 0.4.7+ detects this and refuses to write to the registry PATH,
-printing a diagnostic instead of triggering the dialog. re-unpacker still finds
+RE-Unpacker 0.4.7+ detects this and refuses to write to the registry PATH,
+printing a diagnostic instead of triggering the dialog. RE-Unpacker still finds
 its own tools because it probes `C:\Program Files\re-unpacker\bin\` directly.
 
 To let external shells see the tools again, clean up PATH:
@@ -134,12 +134,12 @@ To let external shells see the tools again, clean up PATH:
 1. Open System Properties, then Environment Variables (or run
    `SystemPropertiesAdvanced` and click Environment Variables).
 2. Edit the system `Path`. Remove duplicate entries and entries that point to
-   directories that no longer exist. The diagnostic re-unpacker printed lists
+   directories that no longer exist. The diagnostic RE-Unpacker printed lists
    examples of both.
 3. Ensure `C:\Program Files\re-unpacker\bin` is present.
 4. Re-run `.\re-unpacker.ps1 --install` if needed.
 
-re-unpacker only self-cleans PATH entries it created; it will not remove other
+RE-Unpacker only self-cleans PATH entries it created; it will not remove other
 software's entries automatically, but it identifies them so you can act.
 
 ## Windows: installed tools not detected
@@ -149,7 +149,7 @@ report just-installed tools as missing. This is a Windows PATH-propagation
 timing issue: HKLM PATH updates reach only new processes after a settings-change
 broadcast, and children of an already-running shell inherit the old PATH.
 
-re-unpacker 0.4.6+ works around this by probing the install directory and the
+RE-Unpacker 0.4.6+ works around this by probing the install directory and the
 Python Scripts directories directly, so its own runs find the tools regardless.
 If an external shell still cannot see a tool, open a fresh shell (or sign out
 and back in) so it inherits the updated PATH.
@@ -157,7 +157,7 @@ and back in) so it inherits the updated PATH.
 ## Windows: install goes to the wrong location
 
 If winget-installed tools land under `%LocalAppData%` instead of `Program
-Files`, you are on a version before 0.4.8. re-unpacker 0.4.8 added
+Files`, you are on a version before 0.4.8. RE-Unpacker 0.4.8 added
 `--scope machine` to winget installs so tools land in `Program Files`. Update to
 the latest release. Tools that genuinely cannot install machine-scope will surface an explicit
 error rather than silently falling back to user scope.
@@ -166,17 +166,17 @@ error rather than silently falling back to user scope.
 
 If `--tools-check` shows a tool version as replacement characters or mojibake
 (for example for Sysinternals sigcheck), you are on a version before the
-byte-level BOM decoder landed. re-unpacker 0.4.6+ detects UTF-16 / UTF-32 / UTF-8
+byte-level BOM decoder landed. RE-Unpacker 0.4.6+ detects UTF-16 / UTF-32 / UTF-8
 BOMs at the byte level before decoding subprocess output. Update to the latest
 release.
 
 ## Encrypted archives
 
-re-unpacker detects encrypted content and classifies it, but does not attempt
+RE-Unpacker detects encrypted content and classifies it, but does not attempt
 password recovery. Kinds `LUKS_ENCRYPTED` and `ENCRYPTED_GENERIC` (encrypted
 RAR / 7z / DMG) are terminal: they are recorded in the manifest with the
 detected encryption scheme, and recursion stops there. Decrypt the content out
-of band with the correct key, then run re-unpacker on the decrypted result.
+of band with the correct key, then run RE-Unpacker on the decrypted result.
 
 ## Reading the logs
 
