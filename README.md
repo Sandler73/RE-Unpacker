@@ -4,30 +4,32 @@
 
 <div align="center">
 
-# re-unpacker
+<div align="center">
+
+# RE-Unpacker
 
 **Recursive package / installer / archive / binary extractor for reverse-engineering triage.**
 
 <!-- Dynamic status badges: these reflect live repository state. -->
 [![CI](https://github.com/Sandler73/RE-Unpacker/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Sandler73/RE-Unpacker/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/Sandler73/RE-Unpacker/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/Sandler73/RE-Unpacker/actions/workflows/codeql.yml)
-[![Release](https://img.shields.io/github/v/release/Sandler73/RE-Unpacker?display_name=tag&sort=semver)](https://github.com/Sandler73/RE-Unpacker/releases)
-[![Last commit](https://img.shields.io/github/last-commit/Sandler73/RE-Unpacker)](https://github.com/Sandler73/RE-Unpacker/commits/main)
-[![Open issues](https://img.shields.io/github/issues/Sandler73/RE-Unpacker)](https://github.com/Sandler73/RE-Unpacker/issues)
+[![Release](https://img.shields.io/github/v/release/Sandler73/RE-Unpacker?display_name=tag&sort=semver&cacheSeconds=3600)](https://github.com/Sandler73/RE-Unpacker/releases)
+[![Last commit](https://img.shields.io/github/last-commit/Sandler73/RE-Unpacker?cacheSeconds=3600)](https://github.com/Sandler73/RE-Unpacker/commits/main)
+[![Open issues](https://img.shields.io/github/issues/Sandler73/RE-Unpacker?cacheSeconds=3600)](https://github.com/Sandler73/RE-Unpacker/issues)
 
 <!-- Project characteristic badges. -->
-[![Version](https://img.shields.io/badge/version-0.4.10-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.5.0-blue.svg)](CHANGELOG.md)
 [![Manifest schema](https://img.shields.io/badge/manifest%20schema-1.1.0-blue.svg)](#manifest-schema)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20Windows-lightgrey.svg)](#install)
-<img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="MIT License">
+[![License](https://img.shields.io/github/license/Sandler73/RE-Unpacker?color=green&cacheSeconds=3600)](LICENSE)
 [![Runtime deps](https://img.shields.io/badge/runtime%20deps-none-brightgreen.svg)](pyproject.toml)
 [![Code style](https://img.shields.io/badge/lint-ruff-black.svg)](https://docs.astral.sh/ruff/)
 [![Formats](https://img.shields.io/badge/formats-70%20extractable%20kinds-blue.svg)](#supported-formats)
 
 </div>
 
-**Current release: 0.4.10** -- a patch release normalizing source headers across all 52 modules, synchronizing per-file version references with the framework version (now enforced by a test gate), and removing release annotations such as "added in vX.Y.Z" from code comments, docstrings, and documentation so they state fact-of behavior instead. No functional change. See [CHANGELOG.md](CHANGELOG.md) for the complete, versioned history from 0.1.0 onward. The manifest schema is **1.1.0** and is byte-compatible across Linux and Windows.
+**Current release: 0.5.0** -- this release adopts odometer versioning, in which each version component is a single digit that rolls over into the one above it; the release after 0.4.9 is therefore 0.5.0. It folds in the source-header normalization across all 52 modules, the removal of release annotations from code and documentation, and a repository hygiene pass. No change to extraction behavior. See [CHANGELOG.md](CHANGELOG.md) for the complete history from 0.1.0 onward. The manifest schema is **1.1.0** and is byte-compatible across Linux and Windows.
 
 Hand it a file or a directory and it will pull apart every package, installer, archive, filesystem image, compressed stream, and packed binary it can recognize -- recursively, until it hits bedrock -- and write a structured tree plus a manifest describing everything it found.
 
@@ -95,65 +97,65 @@ Both are self-contained (no external CSS / JS / fonts) and render in any browser
 | Category | Formats | Primary tool | Fallback(s) |
 |----------|---------|--------------|-------------|
 | Linux packages | `.deb` `.udeb` | `dpkg-deb` | `ar` + `tar` |
-|  | `.rpm` | `rpm2cpio` \| `cpio` | `rpm2archive` + `tar` |
+| | `.rpm` | `rpm2cpio` \| `cpio` | `rpm2archive` + `tar` |
 | Windows installers | `.msi` `.msp` | `msiextract` | `7z` |
-|  | `.cab` | `cabextract` | `7z` |
-|  | NSIS installers | `7z` | `binwalk` |
-|  | InnoSetup | `innoextract` | `7z` |
-|  | InstallShield (`setup.exe` + `data*.cab`) | `unshield` | `7z` |
-|  | WiX Burn / generic PE installers | `7z` | `binwalk` |
+| | `.cab` | `cabextract` | `7z` |
+| | NSIS installers | `7z` | `binwalk` |
+| | InnoSetup | `innoextract` | `7z` |
+| | InstallShield (`setup.exe` + `data*.cab`) | `unshield` | `7z` |
+| | WiX Burn / generic PE installers | `7z` | `binwalk` |
 | Filesystem images | `.iso` / UDF | `7z` | `bsdtar` |
-|  | `.dmg` (unencrypted UDIF) | `7z` | -- |
-|  | `.xar` / `.pkg` (macOS) | `7z` | -- |
-|  | SquashFS | `unsquashfs` | -- |
-|  | `.snap` (SquashFS) | `unsquashfs` | -- |
-|  | AppImage | `unsquashfs` at offset | `--appimage-extract` |
+| | `.dmg` (unencrypted UDIF) | `7z` | -- |
+| | `.xar` / `.pkg` (macOS) | `7z` | -- |
+| | SquashFS | `unsquashfs` | -- |
+| | `.snap` (SquashFS) | `unsquashfs` | -- |
+| | AppImage | `unsquashfs` at offset | `--appimage-extract` |
 | Traditional archives | `.tar` / `.tar.{gz,bz2,xz,zst,lzma}` | `tar` | -- |
-|  | `.zip` / `.jar` / `.apk` / `.whl` / `.docx` / … | `unzip` | `7z` |
-|  | `.7z` | `7z` | -- |
-|  | `.rar` | `unrar` | `7z` |
-|  | `.ar` / `.a` | `ar` | -- |
-|  | `.cpio` | `cpio` | -- |
+| | `.zip` / `.jar` / `.apk` / `.whl` / `.docx` / … | `unzip` | `7z` |
+| | `.7z` | `7z` | -- |
+| | `.rar` | `unrar` | `7z` |
+| | `.ar` / `.a` | `ar` | -- |
+| | `.cpio` | `cpio` | -- |
 | Single-stream compression | `.gz` / `.bz2` / `.xz` / `.zst` / `.lzma` / `.lz4` / `.lzo` | corresponding CLI | -- |
 | Binaries | UPX-packed ELF / PE / Mach-O | `upx -d` on copy | -- |
-|  | PE resources (icons, manifests, embedded binaries) | `wrestool` (**secondary**) | -- |
-|  | ELF sections (`.text`, `.rodata`, `.data`, `.note.*` …) | `objcopy` + `readelf` (**secondary**) | -- |
+| | PE resources (icons, manifests, embedded binaries) | `wrestool` (**secondary**) | -- |
+| | ELF sections (`.text`, `.rodata`, `.data`, `.note.*` …) | `objcopy` + `readelf` (**secondary**) | -- |
 | Last resort | unknown binaries with embedded signatures | `binwalk -Me` | -- |
-|  |  |  |  |
+| | | | |
 | **Extended and legacy archives** | `.arj` | `arj` | -- |
-|  | `.lha` / `.lzh` | `lha` (lhasa) | `unar` |
-|  | `.lz` (lzip single stream) | `lzip -d -c` | -- |
-|  | `.tar.lz` / `.tlz` | `lzip -d \| tar -xf -` (pipeline) | -- |
-|  | `.lrz` (lrzip) | `lrzip -d` on copy | -- |
-|  | `.zpaq` | `zpaq x` | -- |
-|  | `.arc` / `.ark` (ARC/ARK MS-DOS) | `nomarch` | -- |
-|  | `.tnef` / `winmail.dat` | `tnef -C` | -- |
-|  | `.shar` (POSIX shell archive) | `unshar -d` | -- |
-|  | `.uu` / `.uue` (uuencoded) | `uudecode` | -- |
-|  | `.sit` / `.sitx` (StuffIt) | `unar` | -- |
-|  | `.alz` (Korean ALZ) | `unar` | -- |
-|  | `.ace` | `unar` | -- |
-|  |  |  |  |
+| | `.lha` / `.lzh` | `lha` (lhasa) | `unar` |
+| | `.lz` (lzip single stream) | `lzip -d -c` | -- |
+| | `.tar.lz` / `.tlz` | `lzip -d \| tar -xf -` (pipeline) | -- |
+| | `.lrz` (lrzip) | `lrzip -d` on copy | -- |
+| | `.zpaq` | `zpaq x` | -- |
+| | `.arc` / `.ark` (ARC/ARK MS-DOS) | `nomarch` | -- |
+| | `.tnef` / `winmail.dat` | `tnef -C` | -- |
+| | `.shar` (POSIX shell archive) | `unshar -d` | -- |
+| | `.uu` / `.uue` (uuencoded) | `uudecode` | -- |
+| | `.sit` / `.sitx` (StuffIt) | `unar` | -- |
+| | `.alz` (Korean ALZ) | `unar` | -- |
+| | `.ace` | `unar` | -- |
+| | | | |
 | **Documents, disk images, and filesystems** | PDF (with attachments) | `pdfdetach -saveall` | -- |
-|  | PDF (structure / streams) | `qpdf --qdf` | -- |
-|  | `.apk` (Android package, decoded) | `apktool d` | `unzip` (raw fallback at priority 80) |
-|  | `.vmdk` (VMware) | `vmdkmount` (FUSE, root) | `qemu-img convert` (no root) |
-|  | `.qcow2` / `.qcow` (QEMU) | `qcowmount` (FUSE, root) | `qemu-img convert` |
-|  | `.vhd` / `.vhdx` (Microsoft) | `vhdimount` (FUSE, root) | `qemu-img convert` |
-|  | NTFS (in disk image) | `fsntfsmount` (FUSE, root) | -- |
-|  | ext{2,3,4} (in disk image) | `fsextmount` (FUSE, root) | -- |
-|  | XFS (in disk image) | `fsxfsmount` (FUSE, root) | -- |
-|  | APFS (in disk image) | `fsapfsmount` (FUSE, root) | -- |
-|  | HFS+ (in disk image) | `fshfsmount` (FUSE, root) | -- |
-|  | FAT (in disk image) | `fsfatmount` (FUSE, root) | `mtools` |
-|  | VSS shadow copies | `vshadowmount` (FUSE, root) | -- |
-|  | LVM2 | `vslvmmount` (FUSE, root) | -- |
-|  | JFFS2 / UBI / MTD (firmware) | `binwalk -e` (priority 80) | -- |
-|  | `.kwaj` / `.szdd` (MS DOS-era) | `msexpand` | -- |
-|  | macOS binary plist (BPLIST) | `plistutil -i -o -f xml` (secondary) | (terminal kind, no primary) |
-|  |  |  |  |
+| | PDF (structure / streams) | `qpdf --qdf` | -- |
+| | `.apk` (Android package, decoded) | `apktool d` | `unzip` (raw fallback at priority 80) |
+| | `.vmdk` (VMware) | `vmdkmount` (FUSE, root) | `qemu-img convert` (no root) |
+| | `.qcow2` / `.qcow` (QEMU) | `qcowmount` (FUSE, root) | `qemu-img convert` |
+| | `.vhd` / `.vhdx` (Microsoft) | `vhdimount` (FUSE, root) | `qemu-img convert` |
+| | NTFS (in disk image) | `fsntfsmount` (FUSE, root) | -- |
+| | ext{2,3,4} (in disk image) | `fsextmount` (FUSE, root) | -- |
+| | XFS (in disk image) | `fsxfsmount` (FUSE, root) | -- |
+| | APFS (in disk image) | `fsapfsmount` (FUSE, root) | -- |
+| | HFS+ (in disk image) | `fshfsmount` (FUSE, root) | -- |
+| | FAT (in disk image) | `fsfatmount` (FUSE, root) | `mtools` |
+| | VSS shadow copies | `vshadowmount` (FUSE, root) | -- |
+| | LVM2 | `vslvmmount` (FUSE, root) | -- |
+| | JFFS2 / UBI / MTD (firmware) | `binwalk -e` (priority 80) | -- |
+| | `.kwaj` / `.szdd` (MS DOS-era) | `msexpand` | -- |
+| | macOS binary plist (BPLIST) | `plistutil -i -o -f xml` (secondary) | (terminal kind, no primary) |
+| | | | |
 | **Terminal-classify (no recursion)** | LUKS encrypted volumes | (none -- classify only, kind=LUKS_ENCRYPTED) | -- |
-|  | Encrypted RAR/7z/DMG | (none -- classify only, kind=ENCRYPTED_GENERIC) | -- |
+| | Encrypted RAR/7z/DMG | (none -- classify only, kind=ENCRYPTED_GENERIC) | -- |
 
 "Secondary" extractors run in addition to (not instead of) the primary extraction, and their output lands in a sibling `_secondary_<name>/` directory inside the unpack folder.
 
@@ -184,7 +186,7 @@ sudo apt-get install -y \
 
 On full Kali installs, the libyal `lib*-utils` packages ship the FUSE `*mount` binaries needed for the forensic-filesystem extractors. On Ubuntu and minimal Debian installs, only the `*info` companions ship; the FUSE-mount-based extractors will be silently filtered as unavailable (run `re-unpacker --tools-check` to see the gap).
 
-Or simpler -- let re-unpacker install everything for you (see `--install` in the [Modes](#modes) section below):
+Or simpler -- let RE-Unpacker install everything for you (see `--install` in the [Modes](#modes) section below):
 
 ```bash
 sudo re-unpacker --install --yes
@@ -211,7 +213,7 @@ Same source tree, different package manager. Two choices for invocation:
 # PowerShell wrapper (preferred):
 .\re-unpacker.ps1 --version
 
-# cmd.exe shim (for restricted-execution-policy environments):
+# Cmd.exe shim (for restricted-execution-policy environments):
 re-unpacker.cmd --version
 ```
 
@@ -290,7 +292,7 @@ Every feature-flag defaults to the sensible ON position. Use the `--no-*` form t
 
 ### Modes
 
-re-unpacker has six top-level modes, all mutually exclusive:
+RE-Unpacker has six top-level modes, all mutually exclusive:
 
 | Mode | What it does | Root required |
 |------|-------------|---------------|
@@ -331,9 +333,9 @@ sudo re-unpacker --install --yes --no-refresh-index
 --timeout 1800
 
 # Hard byte ceilings
---max-extracted-size  50000000000      # 50 GiB per single archive
---max-total-size     500000000000      # 500 GiB across the whole run
---max-files          1000000           # files per archive
+--max-extracted-size 50000000000 # 50 GiB per single archive
+--max-total-size 500000000000 # 500 GiB across the whole run
+--max-files 1000000 # files per archive
 ```
 
 Hitting any of these aborts further extraction with `SafetyLimitExceeded` and exit code 2, but the manifest and logs written so far are preserved.
@@ -344,19 +346,19 @@ After extraction completes, the orchestrator runs a per-file enrichment phase: s
 
 ```bash
 # Disable individual classifier passes (verifiers always run, no opt-out)
---no-yara              # Skip YARA rule matching pass
---no-fuzzy-hash        # Skip ssdeep + TLSH fuzzy hash computation
---no-exif              # Skip exiftool metadata extraction
---no-entropy           # Skip Shannon entropy computation (also disables
-                       # the encryption heuristic that depends on it)
+--no-yara # Skip YARA rule matching pass
+--no-fuzzy-hash # Skip ssdeep + TLSH fuzzy hash computation
+--no-exif # Skip exiftool metadata extraction
+--no-entropy # Skip Shannon entropy computation (also disables
+                       # The encryption heuristic that depends on it)
 
 # YARA rule loading
---yara-rules PATH      # Single file or directory; bypasses default
-                       # auto-discovery (UNION of /etc/yara/,
+--yara-rules PATH # Single file or directory; bypasses default
+                       # Auto-discovery (UNION of /etc/yara/,
                        # ~/.config/re-unpacker/yara/, YARA Forge default)
 
 # Per-pass per-file timeout (verifiers AND classifiers)
---enrich-timeout SEC   # Default: 30 seconds
+--enrich-timeout SEC # Default: 30 seconds
 ```
 
 **Default YARA rule auto-discovery (when `--yara-rules` is not given):** UNION of all three default directories, with each rule file's source dir contributing a namespace prefix (`etc:` / `user:` / `forge:`) so duplicate rule names across directories resolve cleanly.
@@ -389,16 +391,16 @@ After extraction completes, the orchestrator runs a per-file enrichment phase: s
 --log-level {DEBUG|INFO|WARNING|ERROR|CRITICAL}
 
 # Convenience verbosity shortcuts
--v, --verbose       # = --log-level INFO (default)
--vv                 # = --log-level DEBUG
--q, --quiet         # = --log-level WARNING (suppress INFO)
+-v, --verbose # = --log-level INFO (default)
+-vv # = --log-level DEBUG
+-q, --quiet # = --log-level WARNING (suppress INFO)
 
 # (-v and -q are mutually exclusive; --log-level overrides both with a warning)
 
 # File log path (extract mode adds it on top of <output>/extraction.log;
-# non-extract modes use it instead of the default cache-dir path)
+# Non-extract modes use it instead of the default cache-dir path)
 --log-file PATH
---log-file -        # disable file logging entirely
+--log-file - # disable file logging entirely
 ```
 
 **Default file log locations:**
@@ -428,23 +430,23 @@ Every run writes to `<output_root>/` with this structure:
 
 ```text
 <output_root>/
-├── manifest.json                     # consolidated final manifest
-├── manifest.jsonl                    # streaming JSONL, line-buffered (crash-resilient)
-├── extraction.log                    # full DEBUG log (line-buffered)
-├── errors.log                        # warnings+ only, for quick triage
-├── tree.txt                          # pure-Python tree-style listing of extracted/
-├── summary.txt                       # stats, top kinds, largest files, error summary
+├── manifest.json # consolidated final manifest
+├── manifest.jsonl # streaming JSONL, line-buffered (crash-resilient)
+├── extraction.log # full DEBUG log (line-buffered)
+├── errors.log # warnings+ only, for quick triage
+├── tree.txt # pure-Python tree-style listing of extracted/
+├── summary.txt # stats, top kinds, largest files, error summary
 └── extracted/
-    └── <input-name>.unpacked/        # top-level input
+    └── <input-name>.unpacked/ # top-level input
         ├── (files from primary extraction)
-        ├── <nested>.unpacked/        # recursive: same scheme at each depth
-        │   └── …
-        ├── _secondary_<extractor>/   # e.g. _secondary_wrestool/ or _secondary_objcopy_ELF_sections/
-        │   └── …
-        └── _quarantine/              # (only if the path-safety audit moved anything here)
+        ├── <nested>.unpacked/ # recursive: same scheme at each depth
+        │ └── …
+        ├── _secondary_<extractor>/ # e.g. _secondary_wrestool/ or _secondary_objcopy_ELF_sections/
+        │ └── …
+        └── _quarantine/ # (only if the path-safety audit moved anything here)
 ```
 
-The `.unpacked` suffix makes it obvious in `ls` output which directories are re-unpacker products. `_secondary_…` subdirectories are the outputs of resource / section extractors (PE resources, ELF sections). `_quarantine` only appears if an escaping path was detected and relocated.
+The `.unpacked` suffix makes it obvious in `ls` output which directories are RE-Unpacker products. `_secondary_…` subdirectories are the outputs of resource / section extractors (PE resources, ELF sections). `_quarantine` only appears if an escaping path was detected and relocated.
 
 ---
 
@@ -460,20 +462,20 @@ The `.unpacked` suffix makes it obvious in `ls` output which directories are re-
   "tool": "re-unpacker",
   "tool_version": "0.3.2",
   "generated_at": "2026-04-21T17:48:30Z",
-  "opened_at":    "2026-04-21T17:48:28Z",
+  "opened_at": "2026-04-21T17:48:28Z",
   "host": "kali-rig-01",
-  "os":   "Linux-6.6.x-…",
+  "os": "Linux-6.6.x-…",
   "invocation": {
     "argv": ["…", "sample.deb", "-o", "out"],
-    "cwd":  "/home/re/work",
-    "pid":  12345
+    "cwd": "/home/re/work",
+    "pid": 12345
   },
-  "input_root":  "/path/to/input",
+  "input_root": "/path/to/input",
   "output_root": "/path/to/out",
   "tools_detected": { /* per-tool: path, version, package_hint, available */ },
-  "stats":  { /* see below */ },
+  "stats": { /* see below */ },
   "errors": [ /* list of ErrorEntry */ ],
-  "files":  [ /* list of FileEntry */ ]
+  "files": [ /* list of FileEntry */ ]
 }
 ```
 
@@ -481,18 +483,18 @@ The `.unpacked` suffix makes it obvious in `ls` output which directories are re-
 
 ```jsonc
 {
-  "inputs_scanned":          22,
-  "files_extracted":         22,
-  "archives_processed":      3,
-  "archives_failed":         0,
-  "archives_skipped_dedup":  0,
-  "bytes_in":                0,
-  "bytes_out":               356826,
-  "duration_seconds":        1.38,
-  "max_depth_reached":       4,
-  "errors_count":            0,
-  "quarantined_paths":       0,
-  "symlinks_neutralized":    0
+  "inputs_scanned": 22,
+  "files_extracted": 22,
+  "archives_processed": 3,
+  "archives_failed": 0,
+  "archives_skipped_dedup": 0,
+  "bytes_in": 0,
+  "bytes_out": 356826,
+  "duration_seconds": 1.38,
+  "max_depth_reached": 4,
+  "errors_count": 0,
+  "quarantined_paths": 0,
+  "symlinks_neutralized": 0
 }
 ```
 
@@ -502,48 +504,48 @@ One per file the orchestrator looked at (both extracted and pass-through):
 
 ```jsonc
 {
-  "path":                    "/abs/path/to/file",
-  "rel_path":                "extracted/…/file",
-  "rel_path_from_source":    "inner/path/inside/archive",
-  "source_archive":          "/abs/path/to/parent.tar.gz",
-  "source_archive_sha256":   "27b4…",
-  "size":                    51234,
-  "sha256":                  "…",
-  "md5":                     "…",
-  "file_magic":              "ELF 64-bit LSB pie executable, x86-64, …",
-  "mime_type":               "application/x-pie-executable",
-  "kind":                    "ELF",
-  "extractor":               null,
-  "depth":                   3,
-  "mode":                    "0755",
-  "mtime":                   "2026-04-21T17:48:28Z",
-  "signals":                 ["magic:ELF", "file_desc:ELF …", "mime:…", "ext:"],
+  "path": "/abs/path/to/file",
+  "rel_path": "extracted/…/file",
+  "rel_path_from_source": "inner/path/inside/archive",
+  "source_archive": "/abs/path/to/parent.tar.gz",
+  "source_archive_sha256": "27b4…",
+  "size": 51234,
+  "sha256": "…",
+  "md5": "…",
+  "file_magic": "ELF 64-bit LSB pie executable, x86-64, …",
+  "mime_type": "application/x-pie-executable",
+  "kind": "ELF",
+  "extractor": null,
+  "depth": 3,
+  "mode": "0755",
+  "mtime": "2026-04-21T17:48:28Z",
+  "signals": ["magic:ELF", "file_desc:ELF …", "mime:…", "ext:"],
   // -------- schema 1.1.0 additions, all optional --------
-  "ssdeep":                  "768:abc...:xyz",          // null when not computed
-  "tlsh":                    "T1A2B3C4...",              // null below TLSH min size / diversity
-  "entropy":                 7.823,                       // bits/byte, range 0.0--8.0
-  "encrypted":               false,
-  "encryption_scheme":       null,                        // "luks" | "gpg" | "rar5-encrypted" | "age" | null
-  "yara_matches":            [
+  "ssdeep": "768:abc...:xyz", // null when not computed
+  "tlsh": "T1A2B3C4...", // null below TLSH min size / diversity
+  "entropy": 7.823, // bits/byte, range 0.0--8.0
+  "encrypted": false,
+  "encryption_scheme": null, // "luks" | "gpg" | "rar5-encrypted" | "age" | null
+  "yara_matches": [
     {
-      "rule_name":  "Suspicious_Powershell",
-      "namespace":  "etc:0:rules",
-      "tags":       ["powershell", "obfuscated"],
-      "meta":       {"author": "...", "severity": "high"}
+      "rule_name": "Suspicious_Powershell",
+      "namespace": "etc:0:rules",
+      "tags": ["powershell", "obfuscated"],
+      "meta": {"author": "...", "severity": "high"}
     }
   ],
-  "exif_metadata":           { "FileType": "ELF", "MachineType": "AMD64", /* ... */ },
-  "enrichment_skipped":      null,                        // "size_exceeds_cap" when > 256 MiB
-  "verification":            [
+  "exif_metadata": { "FileType": "ELF", "MachineType": "AMD64", /* ... */ },
+  "enrichment_skipped": null, // "size_exceeds_cap" when > 256 MiB
+  "verification": [
     {
-      "verifier_name":     "rpm-K",
-      "performed":         true,
-      "applicable":        true,
-      "signed":            true,
-      "valid":             true,
-      "signer":            null,
-      "error":             null,
-      "duration_seconds":  0.123
+      "verifier_name": "rpm-K",
+      "performed": true,
+      "applicable": true,
+      "signed": true,
+      "valid": true,
+      "signer": null,
+      "error": null,
+      "duration_seconds": 0.123
     }
   ]
 }
@@ -553,14 +555,14 @@ One per file the orchestrator looked at (both extracted and pass-through):
 
 ```jsonc
 {
-  "timestamp":       "2026-04-21T17:48:29Z",
-  "path":            "/abs/path/to/source.exe",
-  "extractor":       "innoextract",
-  "error_class":     "ExtractorFailure",
-  "message":         "Extractor 'innoextract' failed on '…' (rc=1)",
-  "returncode":      1,
-  "stderr_snippet":  "I/O error…",
-  "context":         { /* per-error extras */ }
+  "timestamp": "2026-04-21T17:48:29Z",
+  "path": "/abs/path/to/source.exe",
+  "extractor": "innoextract",
+  "error_class": "ExtractorFailure",
+  "message": "Extractor 'innoextract' failed on '…' (rc=1)",
+  "returncode": 1,
+  "stderr_snippet": "I/O error…",
+  "context": { /* per-error extras */ }
 }
 ```
 
@@ -576,7 +578,7 @@ jq -c 'select(.record_type == "file" and .kind == "ELF") | .path' out/manifest.j
 
 ## Safety model
 
-re-unpacker takes adversarial input seriously -- archives dropped on RE rigs are often malicious.
+RE-Unpacker takes adversarial input seriously -- archives dropped on RE rigs are often malicious.
 
 - **No `shell=True`.** Every extractor invocation is an `argv` list. No construction of command strings from filenames.
 - **Per-extractor timeout.** Default 1800s. On timeout, `SIGTERM` goes to the process group; `SIGKILL` follows 5s later if the leader hasn't exited. Raises `ExtractorTimeout` → recorded and next extractor tried.
@@ -613,10 +615,10 @@ Most users will stick with the CLI, but the package is import-friendly:
 from re_unpacker import main as cli_main
 
 rc = cli_main(["./sample.deb", "-o", "./out", "--log-level", "WARNING"])
-# rc is the same integer the CLI would have exited with.
+# Rc is the same integer the CLI would have exited with.
 ```
 
-For direct use of the orchestrator (e.g. to embed re-unpacker inside a larger pipeline), see `re_unpacker.cli._run_normal` -- it's the canonical construction pattern for logger → tools → manifest → quota → orchestrator.
+For direct use of the orchestrator (e.g. to embed RE-Unpacker inside a larger pipeline), see `re_unpacker.cli._run_normal` -- it's the canonical construction pattern for logger → tools → manifest → quota → orchestrator.
 
 ---
 
@@ -697,7 +699,7 @@ privately per [SECURITY.md](SECURITY.md), never via public issues.
 
 ## License
 
-re-unpacker is released under the [MIT License](LICENSE). The LICENSE file also
+RE-Unpacker is released under the [MIT License](LICENSE). The LICENSE file also
 carries supplemental terms (disclaimer of warranty, limitation of liability,
 indemnification, acceptable use, security, and compliance) that make explicit
 the expectations for a security-focused reverse-engineering tool that operates
@@ -705,7 +707,7 @@ on untrusted, potentially malicious input. Those supplemental sections do not
 narrow the rights granted by the MIT License; where any could be read to
 conflict, the MIT License controls.
 
-re-unpacker ships no bundled third-party runtime code. It invokes external
+RE-Unpacker ships no bundled third-party runtime code. It invokes external
 system binaries (dpkg-deb, 7-Zip, binwalk, qpdf, yara, exiftool, gpg, the
 libyal toolset, and others) that are installed and licensed separately under
 their own terms.
@@ -713,6 +715,8 @@ their own terms.
 ## Changelog
 
 The complete, versioned history lives in [CHANGELOG.md](CHANGELOG.md), which
-follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and
-[Semantic Versioning](https://semver.org/spec/v2.0.0.html). The current release
+follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and uses
+odometer versioning: each component is a single digit that rolls over into the
+one above it, so the release after 0.4.9 is 0.5.0 and there is no 0.4.10.
+The current release
 is **0.4.8**; see the changelog for every entry back to 0.1.0.
