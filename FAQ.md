@@ -1,4 +1,4 @@
-# re-unpacker Frequently Asked Questions
+# RE-Unpacker Frequently Asked Questions
 
 Conceptual and scope questions. For usage see [USAGE_GUIDE.md](USAGE_GUIDE.md);
 for install see [SETUP_GUIDE.md](SETUP_GUIDE.md); for problems see
@@ -6,7 +6,7 @@ for install see [SETUP_GUIDE.md](SETUP_GUIDE.md); for problems see
 
 ## General
 
-### What is re-unpacker?
+### What is RE-Unpacker?
 
 A recursive extractor for reverse-engineering triage. You hand it a file or a
 directory of files, and it pulls apart every package, installer, archive,
@@ -30,7 +30,7 @@ byte-compatible across platforms.
 
 ### What is the current version?
 
-0.4.10. The manifest schema is 1.1.0. See [CHANGELOG.md](../CHANGELOG.md) for the
+0.5.0. The manifest schema is 1.1.0. See [CHANGELOG.md](../CHANGELOG.md) for the
 full history.
 
 ## Scope and formats
@@ -73,7 +73,7 @@ run). Extracted artifacts may themselves be malicious; treat them accordingly.
 
 ### What does it depend on?
 
-re-unpacker has **no runtime Python dependencies**. It is pure standard-library
+RE-Unpacker has **no runtime Python dependencies**. It is pure standard-library
 Python. All extraction is performed by external system binaries (dpkg-deb,
 7-Zip, cabextract, binwalk, qpdf, yara, exiftool, gpg, the libyal toolset, and
 others), which are installed and licensed separately.
@@ -97,7 +97,7 @@ Windows, with an identical manifest.
 
 ### Is it safe to run on malware?
 
-re-unpacker is designed for exactly that, and implements strong defensive
+RE-Unpacker is designed for exactly that, and implements strong defensive
 controls: argv-only subprocess execution (never a shell), per-extractor
 timeouts, bounded output capture, path-traversal auditing with quarantine, and
 byte / file-count quotas. That said, no tool can guarantee complete safety when
@@ -107,7 +107,7 @@ treat extracted artifacts as potentially malicious.
 
 ### What happens if an archive tries a path-traversal attack?
 
-After every extraction, re-unpacker resolves each extracted symlink against the
+After every extraction, RE-Unpacker resolves each extracted symlink against the
 output root. Escaping symlinks are replaced with a placeholder that records the
 original target (so you can see what the archive attempted), and escaping
 regular files are moved into a `_quarantine/` directory. The counts are surfaced
@@ -115,7 +115,7 @@ in the run statistics.
 
 ### What is a "decompression bomb" and how is it handled?
 
-An archive crafted to expand to an enormous size or file count. re-unpacker
+An archive crafted to expand to an enormous size or file count. RE-Unpacker
 defends against it in two layers. On POSIX, every extraction child runs under an
 `RLIMIT_FSIZE` output-size cap sized to `--max-extracted-size`, so a single-file
 bomb (a tiny input that would expand to hundreds of GB) is stopped by the kernel
