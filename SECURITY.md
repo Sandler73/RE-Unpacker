@@ -1,6 +1,6 @@
 # Security Policy
 
-re-unpacker is a triage tool that deliberately operates on untrusted,
+RE-Unpacker is a triage tool that deliberately operates on untrusted,
 potentially malicious input. Security is a primary design concern, and reports
 of vulnerabilities are taken seriously.
 
@@ -67,17 +67,17 @@ Out of scope:
 
 - Vulnerabilities in the external extraction tools themselves (dpkg-deb,
   7-Zip, binwalk, qpdf, yara, exiftool, gpg, the libyal toolset, and so on).
-  Report those to their respective upstream projects. re-unpacker's
+  Report those to their respective upstream projects. RE-Unpacker's
   responsibility is to invoke them safely, not to fix them.
 - The inherent risk of analyzing malicious input. Extracted artifacts may be
   malicious; that is expected, and handling them safely is the operator's
   responsibility.
-- Findings that require the operator to run re-unpacker in an environment it is
+- Findings that require the operator to run RE-Unpacker in an environment it is
   explicitly documented not to support.
 
 ## Security model summary
 
-re-unpacker implements the following controls. A report that any of these can
+RE-Unpacker implements the following controls. A report that any of these can
 be bypassed is in scope.
 
 - **No shell.** Every extractor invocation is an `argv` list; command strings
@@ -100,7 +100,7 @@ be bypassed is in scope.
 
 ## Safe operation guidance
 
-Operate re-unpacker in an isolated analysis environment (a disposable virtual
+Operate RE-Unpacker in an isolated analysis environment (a disposable virtual
 machine or container without access to sensitive networks or data). Treat every
 extracted artifact as potentially malicious, and handle, store, and dispose of
 extracted content securely.
