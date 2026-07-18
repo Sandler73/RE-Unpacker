@@ -1,12 +1,12 @@
-# re-unpacker Usage Guide
+# RE-Unpacker Usage Guide
 
-This guide is the recipe-driven handbook for re-unpacker: every CLI mode, every
+This guide is the recipe-driven handbook for RE-Unpacker: every CLI mode, every
 flag, and the common workflows. For installation see
 [SETUP_GUIDE.md](SETUP_GUIDE.md); for problems see
 [TROUBLESHOOTING_GUIDE.md](TROUBLESHOOTING_GUIDE.md); for conceptual questions
 see [FAQ.md](FAQ.md).
 
-re-unpacker is at version 0.4.10 and writes a manifest at schema 1.1.0.
+RE-Unpacker is at version 0.5.0 and writes a manifest at schema 1.1.0.
 
 ## Table of contents
 
@@ -28,15 +28,15 @@ re-unpacker is at version 0.4.10 and writes a manifest at schema 1.1.0.
 
 ## Invocation
 
-re-unpacker can be launched five equivalent ways. Pick whichever fits your
+RE-Unpacker can be launched five equivalent ways. Pick whichever fits your
 platform and shell.
 
 ```text
-Linux / macOS (bundled wrapper):   ./re-unpacker sample.deb
-Windows PowerShell (preferred):    .\re-unpacker.ps1 sample.cab
-Windows cmd.exe:                   re-unpacker.cmd sample.cab
-Python module (any platform):      python -m re_unpacker sample.deb
-Installed console script:          re-unpacker sample.deb
+Linux / macOS (bundled wrapper): ./re-unpacker sample.deb
+Windows PowerShell (preferred): .\re-unpacker.ps1 sample.cab
+Windows cmd.exe: re-unpacker.cmd sample.cab
+Python module (any platform): python -m re_unpacker sample.deb
+Installed console script: re-unpacker sample.deb
 ```
 
 All five forward arguments to the same entry point and share an identical CLI
@@ -62,7 +62,7 @@ re-unpacker --dry-run ./samples
 ## How a run works
 
 1. **Seed.** If the input is a file, it is the single seed. If it is a
-   directory, re-unpacker walks it (honoring `--include` / `--exclude`) and
+   directory, RE-Unpacker walks it (honoring `--include` / `--exclude`) and
    seeds every regular file.
 2. **Detect.** Each file's kind is determined by a three-layer detector: magic
    bytes (offset-aware), then `file(1)` / libmagic for disambiguation, then the
@@ -150,7 +150,7 @@ opt-out (they are cheap and best-effort).
 | `--yara-rules PATH` | Use a specific YARA rules file or directory. Bypasses default auto-discovery. |
 | `--enrich-timeout SEC` | Per-pass, per-file timeout for verifiers and classifiers. Default 30. |
 
-When `--yara-rules` is not given, re-unpacker loads rules from its three default
+When `--yara-rules` is not given, RE-Unpacker loads rules from its three default
 directories as a union with namespacing so cross-directory rule-name collisions
 resolve cleanly. Files larger than 256 MiB skip all classifier passes and record
 `enrichment_skipped="size_exceeds_cap"`; verifiers are exempt from that cap.
@@ -235,18 +235,18 @@ Every run writes this structure to the output root:
 
 ```text
 <output_root>/
-  manifest.json        consolidated final manifest (schema 1.1.0)
-  manifest.jsonl       streaming JSONL, line-buffered, crash-resilient
-  extraction.log       full DEBUG log
-  errors.log           warnings and above, for quick triage
-  tree.txt             tree-style listing of extracted/
-  summary.txt          stats, top kinds, largest files, error summary
+  manifest.json consolidated final manifest (schema 1.1.0)
+  manifest.jsonl streaming JSONL, line-buffered, crash-resilient
+  extraction.log full DEBUG log
+  errors.log warnings and above, for quick triage
+  tree.txt tree-style listing of extracted/
+  summary.txt stats, top kinds, largest files, error summary
   extracted/
     <input-name>.unpacked/
       (primary extraction output)
-      <nested>.unpacked/          recursive, same scheme at each depth
-      _secondary_<extractor>/     PE resources, ELF sections, and similar
-      _quarantine/                only present if a path-safety escape was caught
+      <nested>.unpacked/ recursive, same scheme at each depth
+      _secondary_<extractor>/ PE resources, ELF sections, and similar
+      _quarantine/ only present if a path-safety escape was caught
 ```
 
 The `manifest.jsonl` is the friendliest for scripting. Each line is one record
@@ -269,7 +269,7 @@ full field-by-field description.
 from re_unpacker import main as cli_main
 
 rc = cli_main(["./sample.deb", "-o", "./out", "--log-level", "WARNING"])
-# rc is the same integer the CLI would have exited with.
+# Rc is the same integer the CLI would have exited with.
 ```
 
 For embedding the orchestrator directly inside a larger pipeline, see
@@ -293,50 +293,50 @@ logger, tool registry, manifest builder, quota tracker, and the
 
 ```text
 positional:
-  input                        File or directory to unpack.
+  input File or directory to unpack.
 
 output / recursion / limits:
-  -o, --output PATH            Output root directory.
-  -d, --max-depth N            Max recursion depth (default 10).
-  -j, --jobs N                 Parallel worker threads (default 1).
-      --timeout SEC            Per-extraction timeout (default 1800).
-      --max-extracted-size N   Max bytes one archive may produce (default 50 GiB).
-      --max-total-size N       Max bytes produced run-wide (default 500 GiB).
-      --max-files N            Max files one archive may produce (default 1,000,000).
+  -o, --output PATH Output root directory.
+  -d, --max-depth N Max recursion depth (default 10).
+  -j, --jobs N Parallel worker threads (default 1).
+      --timeout SEC Per-extraction timeout (default 1800).
+      --max-extracted-size N Max bytes one archive may produce (default 50 GiB).
+      --max-total-size N Max bytes produced run-wide (default 500 GiB).
+      --max-files N Max files one archive may produce (default 1,000,000).
 
 feature flags:
-      --binwalk / --no-binwalk       binwalk fallback (default ON).
-      --resources / --no-resources   PE resources + ELF sections (default ON).
-      --hash / --no-hash             SHA-256 + MD5 per file (default ON).
-      --dedup / --no-dedup           Skip re-processing seen SHA-256 (default ON).
+      --binwalk / --no-binwalk binwalk fallback (default ON).
+      --resources / --no-resources PE resources + ELF sections (default ON).
+      --hash / --no-hash SHA-256 + MD5 per file (default ON).
+      --dedup / --no-dedup Skip re-processing seen SHA-256 (default ON).
 
 enrichment:
-      --no-yara                Skip YARA rule matching.
-      --no-fuzzy-hash          Skip ssdeep + TLSH.
-      --no-exif                Skip exiftool metadata.
-      --no-entropy             Skip Shannon entropy.
-      --yara-rules PATH        Explicit YARA rules file/dir.
-      --enrich-timeout SEC     Per-pass per-file timeout (default 30).
+      --no-yara Skip YARA rule matching.
+      --no-fuzzy-hash Skip ssdeep + TLSH.
+      --no-exif Skip exiftool metadata.
+      --no-entropy Skip Shannon entropy.
+      --yara-rules PATH Explicit YARA rules file/dir.
+      --enrich-timeout SEC Per-pass per-file timeout (default 30).
 
 filters:
-      --include GLOB           Only seed basenames matching GLOB (repeatable).
-      --exclude GLOB           Skip basenames matching GLOB (repeatable).
+      --include GLOB Only seed basenames matching GLOB (repeatable).
+      --exclude GLOB Skip basenames matching GLOB (repeatable).
 
 modes:
-      --tools-check            Probe tools, print table, exit.
-      --dry-run                Detect kinds without extracting.
-      --install                Install missing tools (root).
-      --uninstall              Remove present tools (root).
-      --repair                 Reinstall present tools (root).
-      --dry-run-install        Print package-manager commands, no execution.
-  -y, --yes                    Skip confirmation prompts.
-      --no-refresh-index       Skip index refresh before --install.
+      --tools-check Probe tools, print table, exit.
+      --dry-run Detect kinds without extracting.
+      --install Install missing tools (root).
+      --uninstall Remove present tools (root).
+      --repair Reinstall present tools (root).
+      --dry-run-install Print package-manager commands, no execution.
+  -y, --yes Skip confirmation prompts.
+      --no-refresh-index Skip index refresh before --install.
 
 logging:
-      --log-level LEVEL        Console level (default INFO).
-  -v, --verbose                -v INFO, -vv DEBUG.
-  -q, --quiet                  WARNING only.
-      --log-file PATH          File log path ('-' disables file logging).
+      --log-level LEVEL Console level (default INFO).
+  -v, --verbose -v INFO, -vv DEBUG.
+  -q, --quiet WARNING only.
+      --log-file PATH File log path ('-' disables file logging).
 
-  -V, --version                Print version and exit.
+  -V, --version Print version and exit.
 ```
