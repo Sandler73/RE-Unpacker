@@ -1,16 +1,58 @@
 # Changelog
 
-All notable changes to re-unpacker are documented in this file.
+All notable changes to RE-Unpacker are documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+
+This project uses **odometer versioning**: each component is a single digit that
+rolls over into the one above it. Patch runs 0 through 9 and then rolls into a
+minor increment, and minor runs 0 through 9 and then rolls into a major
+increment. There is therefore no 0.4.10; the release after 0.4.9 is 0.5.0.
+Component meaning still follows semantic intent (major for breaking changes,
+minor for features, patch for fixes), but the numbering carries and never
+exceeds a single digit per component.
 
 Note on dates: per-version calendar dates were not recorded before this file
 was created, so historical entries are listed by version in descending order
 without a release date. The descriptive text after each version number
 summarizes the release theme. Future entries will carry ISO-8601 dates.
 
-## [0.4.10] - Patch release (source-header normalization and removal of release annotations)
+## [Unreleased]
+
+Maintenance and consistency only. No framework change, so the version is
+deliberately unchanged at 0.5.0.
+
+- **Project-name consistency.** Prose, headings, and descriptions across the
+  README, all guides, the wiki, the HTML documents, and module header
+  descriptions now spell the project name **RE-Unpacker**. Previously the same
+  documents carried `re-unpacker`, `Re-unpacker` (introduced by an earlier bulk
+  edit), and `ReUnpacker` interchangeably, including in the README title.
+- **Deliberately not renamed**, because these are identifiers rather than the
+  project's name, and changing them would break the framework: the importable
+  package ``re_unpacker``; the executable, console-script entry point, and pip
+  distribution name ``re-unpacker``; the wrapper filenames; the derived
+  filesystem paths (``~/.cache/re-unpacker``, ``C:\Program Files\re-unpacker\bin``);
+  and ``PROJECT_NAME``, which is emitted into the manifest ``tool`` field and
+  would be a breaking schema change. Documented commands remain lowercase.
+- **Regression gate added.** ``tests/test_docs_consistency.py`` now asserts the
+  README title, rejects the incorrect prose spellings in every Markdown
+  document, and separately asserts that the lowercase identifiers are intact,
+  so a future global rename cannot silently break imports or the entry point.
+
+## [0.5.0] - Version-scheme change, header normalization, and repository hygiene
+
+This release adopts odometer versioning. The work previously staged as
+0.4.10 is folded in here: under the new scheme 0.4.9 rolls directly to
+0.5.0, so no 0.4.10 was ever released. No functional change to extraction
+behavior; the manifest schema remains 1.1.0.
+
+### Versioning
+
+- Adopted odometer versioning (single-digit components that roll over).
+  A test now enforces the constraint so a two-digit component such as
+  0.4.10 cannot be introduced again.
+
+### Source header normalization and release-annotation removal
 
 Documentation and comment hygiene across the whole source tree. No functional
 change: the executable code is byte-for-byte equivalent apart from four
@@ -62,6 +104,90 @@ regex.
 gates for header structure, version synchronization, and absence of release
 annotations in comments, docstrings, and runtime strings.
 
+### Repository hygiene and disclosure review
+
+### Corrections to the 0.4.10 header-normalization work
+
+The bulk comment rewrite in 0.4.10 over-stripped in three places, removing
+accurate content rather than only release annotations. Those losses are
+restored, and the gate that failed to catch them has been recalibrated. The
+governing principle: when a documentation gate and the source disagree, the
+gate is adjusted unless the source is genuinely defective.
+
+- **Restored the manifest schema contract documentation.** ``FileEntry`` and
+  ``RunStats`` documented which fields belong to schema 1.0.0 and which are
+  1.1.0 additions, and how a reader of either version tolerates the other.
+  The bulk rewrite reduced this to "Schema fields ... schema additions",
+  destroying the compatibility contract that manifest consumers rely on, and
+  left the fragment "(v0.1.x through)". Both are restored and expanded.
+- **Repaired sentences left broken by token removal**, including
+  "Derive the effective log_level from args (, )" and two
+  "# ---- Pass N (, lesson L4x)" comments in ``platform_compat``, plus four
+  comments left starting mid-sentence.
+- **Fixed a stale hardcoded framework version (genuine defect).** The
+  ``_USER_AGENT`` sent to GitHub when downloading Windows tools was the
+  literal ``"re-unpacker/0.4.4"``, six releases out of date, because it was
+  written as a string rather than derived. It is now interpolated from
+  ``constants.VERSION``. The previous gate missed this because its pattern
+  required a "v" prefix.
+
+### Test-instrument corrections
+
+- **Release-annotation detection now targets phrasing, not version tokens.**
+  The previous pattern matched any ``vX.Y.Z``, which would have flagged
+  accurate statements such as "requires binwalk v2.3.4" or "schema 1.1.0
+  additions" and pressured a contributor into deleting correct technical
+  content to make the suite pass. It now matches annotation constructions
+  ("added in", "as of", "part of", bare "(vX.Y.Z)" parentheticals) and leaves
+  factual tool, format, and schema versions alone.
+- **Added calibration tests for the detector itself**, asserting both that it
+  flags real annotations and that it does not flag legitimate versions. A
+  documentation gate that is too broad is worse than none.
+- **Added a gate for hardcoded framework versions** in runtime strings, which
+  is the check that would have caught the stale User-Agent.
+- **Replaced a source-grep assertion with a behavioral test.** The file-count
+  ceiling was verified by grepping the orchestrator for ``quota.add_files(``.
+  It is now verified by running an extraction with ``--max-files`` below the
+  archive's file count and asserting exit code 2, and confirmed to return 0
+  when the ceiling is not breached. Source-text assertions pin the shape of an
+  implementation rather than its behavior: they fail a valid refactor and can
+  pass a broken one.
+- **Narrowed the single-stream teardown guard** to assert only the absence of
+  the non-portable ``killpg`` call, rather than requiring a specific helper to
+  be present.
+
+### Documentation and repository hygiene
+
+No framework change in this group, so the version is deliberately unchanged.
+
+- **README presentation.** The title, tagline, and shield block are centered.
+- **Dynamic shields added.** CI and CodeQL workflow status, latest release, last
+  commit, open issues, and license now render live repository state instead of
+  hardcoded text. A manifest-schema badge and a lint badge were added, and the
+  license badge was switched from a static label to the GitHub-served one.
+  Badges that would go stale (a hardcoded test count) were deliberately not
+  added; badges for services the project does not use (coverage, PyPI) were
+  omitted rather than shipped in a permanently broken state.
+- **Documentation-consistency gate.** ``tests/test_docs_consistency.py``
+  recomputes every numeric claim in the README's badges and "At a glance" table
+  from the source and fails when one drifts. This closes the defect class that
+  produced the previously stale extractor-class and CLI-flag counts.
+- **Badge caching.** The GitHub-data shields (release, last commit, open
+  issues, license) carry an explicit ``cacheSeconds`` parameter. Beyond
+  bounding staleness, this changes the proxied image URL, which forces GitHub's
+  Camo image proxy to re-fetch rather than keep serving an image cached from
+  before the repository was public. Badges rendered while a repository is
+  private or not yet created show "repo not found", and both shields.io and
+  Camo cache that result.
+- **.gitignore extended** from 86 to 328 lines, covering Python, PowerShell,
+  Bash and POSIX shell, cmd and batch, compiled binaries, Jupyter, editors and
+  IDEs, Windows / macOS / Linux OS metadata, documentation build output, and
+  secrets. Archive and disk-image extensions are ignored by default because in
+  this project they are nearly always analysis input, and extracted content may
+  be malicious; run output (``*.unpacked/``, ``_quarantine/``, manifests, logs)
+  is ignored as a safety control rather than mere hygiene. Verified that no
+  currently tracked file becomes ignored.
+
 ## [0.4.9] - Patch release (audit remediations: resource-safety, platform gating, download integrity)
 
 Addresses findings from a principal-level code and documentation audit. No
@@ -111,7 +237,7 @@ guard was dead code. The overrides are renamed to `is_available` with a correct
 
 **REL-2 (Medium): SingleStreamExtractor teardown hardened.** The single-stream
 decompressor hand-rolled a `Popen` and, on timeout, called `os.killpg` directly
-(the exact pattern the L32 fix removed elsewhere: it raises `AttributeError` on
+(the exact pattern removed elsewhere: it raises `AttributeError` on
 Windows and lacked `SIGKILL` escalation). It now routes teardown through the
 shared cross-platform `_terminate_proc_tree` with `SIGTERM` then `SIGKILL`
 escalation and reaping, and honors the `RLIMIT_FSIZE` cap.
@@ -151,13 +277,13 @@ AttributeError: 'WingetBackend' object has no attribute 'is_essential_package'
 
 `AptBackend.is_essential_package` (Linux) wraps `dpkg-query -W -f='${Essential}'` to identify packages flagged Essential:yes (tar, gzip, dpkg, libc6) that cannot be removed without breaking the system. `WingetBackend` (Windows) lacked this method because winget has no equivalent flag. The caller `_compute_present_packages` invokes the method through duck typing without checking; on Linux it worked, on Windows it crashed.
 
-Fix: moved `is_essential_package` to the `PackageManagerBackend` base class with a sensible default (returns `False` -- no concept of "essential" without backend support). `AptBackend` keeps its dpkg-query-based override; `WingetBackend` inherits the base default. Lesson L45: backend / strategy classes need a shared contract enforced at definition time. A method on the base class with a sensible default eliminates the gap entirely.
+Fix: moved `is_essential_package` to the `PackageManagerBackend` base class with a sensible default (returns `False` -- no concept of "essential" without backend support). `AptBackend` keeps its dpkg-query-based override; `WingetBackend` inherits the base default. backend / strategy classes need a shared contract enforced at definition time. A method on the base class with a sensible default eliminates the gap entirely.
 
 **Bug WINGET-SCOPE-APPDATA-01.** Winget installs were going to `%LocalAppData%` paths in violation of project policy. Field log evidence: `exiftool -> C:\Users\Administrator\AppData\Local\Programs\ExifTool\exiftool.EXE`, `pwsh -> C:\Users\Administrator\AppData\Local\Microsoft\WindowsApps\pwsh.EXE`. Cause: `WingetBackend.install_packages` invoked `winget install --id <pkg> --exact --silent --accept-source-agreements --accept-package-agreements` -- with no `--scope` flag, winget defaults to user-scope when running with `--silent`, putting binaries under `%LocalAppData%`.
 
 Fix: added `"--scope", "machine"` to the install argv. Tools that support machine-scope (most of the catalog, including the MSI variants of MSIX-only Microsoft Store apps that winget will select when `--scope machine` is requested) now land in `Program Files`. Tools that genuinely cannot do machine-scope will surface their error explicitly via the existing graceful-failure path rather than silently falling back to user scope.
 
-**Improvement PATH-DIAGNOSTIC-01.** When the system PATH is already over the Windows-safe threshold (which v0.4.7 detects and skips writing to), the framework now prints a comprehensive diagnostic to stdout (not just the log file): current PATH size, the threshold, total entries, count of duplicates, count of dead entries (point to non-existent dirs), proposed cleanup savings, and step-by-step instructions for cleanup via System Properties > Environment Variables. Up to 10 examples each of duplicates and dead entries are printed for direct user reference. The framework cannot self-clean other software's PATH entries safely, but it can identify them clearly so the user can act. Lesson L46: system-wide state changes accumulate across runs and must be self-cleaning OR self-monitoring.
+**Improvement PATH-DIAGNOSTIC-01.** When the system PATH is already over the Windows-safe threshold (which v0.4.7 detects and skips writing to), the framework now prints a comprehensive diagnostic to stdout (not just the log file): current PATH size, the threshold, total entries, count of duplicates, count of dead entries (point to non-existent dirs), proposed cleanup savings, and step-by-step instructions for cleanup via System Properties > Environment Variables. Up to 10 examples each of duplicates and dead entries are printed for direct user reference. The framework cannot self-clean other software's PATH entries safely, but it can identify them clearly so the user can act. system-wide state changes accumulate across runs and must be self-cleaning OR self-monitoring.
 
 **Section 22.2 expanded.** The Usage Guide now contains a comprehensive table for every tool that has no winget Package ID:
 
@@ -172,34 +298,34 @@ Each row documents what the tool provides, where to obtain it, and notes about s
 
 **Lessons captured:**
 
-- **L45**: backend / strategy classes need a shared contract enforced at definition time. Either via abstract base class with `@abstractmethod`, or via a base-class default that subclasses override only when behavior differs. The former fails at instantiation time; the latter has zero failure surface.
-- **L46**: system-wide state changes accumulate across runs and must be self-cleaning OR self-monitoring. Tools that modify shared state (PATH, registry keys, startup entries, scheduled tasks) should monitor cumulative state, not just check pre-write conditions, and provide a diagnostic / cleanup path for the state they helped grow.
+- Backend / strategy classes need a shared contract enforced at definition time. Either via abstract base class with `@abstractmethod`, or via a base-class default that subclasses override only when behavior differs. The former fails at instantiation time; the latter has zero failure surface.
+- System-wide state changes accumulate across runs and must be self-cleaning OR self-monitoring. Tools that modify shared state (PATH, registry keys, startup entries, scheduled tasks) should monitor cumulative state, not just check pre-write conditions, and provide a diagnostic / cleanup path for the state they helped grow.
 
 v0.4.0 architectural decisions and inventory unchanged.
 
 ## [0.4.7] - Patch release (PATH overflow guard + plistutil probe fix)
 
-Two bugs from v0.4.6 Windows 11 Pro field test (testrun510.txt, 599 lines, 4 invocations across 32 minutes). The v0.4.6 manual-install detection improvements are confirmed working: the field log shows `Manual install batch complete: 6 succeeded, 1 failed, 33 skipped` (lines 453-506) with all 6 succeeded tools (binwalk, ewfinfo, ewfexport, osslsigncode, pdfdetach, plistutil) detected post-install via the v0.4.6 Pass 0 well-known fallback at `C:\Program Files\re-unpacker\bin\`. Sigcheck displays its readable version "Sigcheck v2.91 - File version and signature viewer" (lines 265, 577), confirming the v0.4.6 byte-level BOM decoder works.
+Two bugs from v0.4.6 Windows 11 Pro field test. The v0.4.6 manual-install detection improvements are confirmed working: the field log shows `Manual install batch complete: 6 succeeded, 1 failed, 33 skipped` (lines 453-506) with all 6 succeeded tools (binwalk, ewfinfo, ewfexport, osslsigncode, pdfdetach, plistutil) detected post-install via the v0.4.6 Pass 0 well-known fallback at `C:\Program Files\re-unpacker\bin\`. Sigcheck displays its readable version "Sigcheck v2.91 - File version and signature viewer" (lines 265, 577), confirming the v0.4.6 byte-level BOM decoder works.
 
 **Bug PATH-OVERFLOW-POPUP-01 (CRITICAL).** User reported: "Now generates a new pop-up Error message 'PATH env variable too big'."
 
-Root cause: across multiple `--install` runs on the same machine, cumulative system PATH growth (winget per-package additions plus our re-unpacker bin dir plus accumulated entries from prior re-unpacker versions and any unrelated software) crossed the legacy 2047-char REG_SZ environment variable buffer limit. Windows' env-var change broadcast mechanism shows a modal "PATH env variable too big" dialog when a registry write would exceed this limit. v0.4.6's `_add_install_dir_to_system_path` had no length check before calling `winreg.SetValueEx`.
+Root cause: across multiple `--install` runs on the same machine, cumulative system PATH growth (winget per-package additions plus our RE-Unpacker bin dir plus accumulated entries from prior RE-Unpacker versions and any unrelated software) crossed the legacy 2047-char REG_SZ environment variable buffer limit. Windows' env-var change broadcast mechanism shows a modal "PATH env variable too big" dialog when a registry write would exceed this limit. v0.4.6's `_add_install_dir_to_system_path` had no length check before calling `winreg.SetValueEx`.
 
 This isn't a code change in v0.4.6 (the PATH update logic is unchanged from v0.4.4); it's the cumulative effect of repeated installations across versions finally crossing the threshold during this run.
 
 Fix: rewrote `_add_install_dir_to_system_path` to:
 
-1. **Always update the current Python process's PATH first**, idempotently and process-locally (using `os.environ`). This can never trigger the Windows dialog because it doesn't touch the registry. It enables current-run tool discovery via the standard PATH mechanism for subprocesses Claude spawns within this Python invocation.
+1. **Always update the current Python process's PATH first**, idempotently and process-locally (using `os.environ`). This can never trigger the Windows dialog because it doesn't touch the registry. It enables current-run tool discovery via the standard PATH mechanism for subprocesses RE-Unpacker spawns within this Python invocation.
 2. **Use `os.path.normpath`** for idempotency comparison instead of raw string comparison. Without normalization, `C:\Program Files\re-unpacker\bin\` and `C:\Program Files\re-unpacker\bin` are treated as different entries even though they're the same directory; case variation (`C:\PROGRAM FILES\...`) likewise.
 3. **Length-check the proposed new PATH value before writing the registry**, with a safe threshold of 1900 chars (margin under 2047).
 4. **Skip the registry write with a clear, actionable warning** if the threshold would be exceeded. The warning explains:
    - Current PATH size and what the appended size would be
    - Why we're skipping (Windows-safe threshold)
-   - That re-unpacker tools remain discoverable via Pass 0 of `_windows_well_known_lookup` (so re-unpacker continues to work)
+   - That RE-Unpacker tools remain discoverable via Pass 0 of `_windows_well_known_lookup` (so RE-Unpacker continues to work)
    - That external shells won't see these tools on PATH unless the user manually cleans up cumulative PATH bloat in System Properties > Environment Variables
-5. **Continue gracefully** -- the install batch doesn't fail just because we skipped the registry update. Pass 0 (added in v0.4.6) is the always-on discovery mechanism for re-unpacker invocations; the registry update is the usability optimization for external shells.
+5. **Continue gracefully** -- the install batch doesn't fail just because we skipped the registry update. Pass 0 (added in v0.4.6) is the always-on discovery mechanism for RE-Unpacker invocations; the registry update is the usability optimization for external shells.
 
-**Bug PLISTUTIL-PROBE-STDIN-01 (cosmetic).** v0.4.6 testrun510.txt line 562:
+**Bug PLISTUTIL-PROBE-STDIN-01 (cosmetic).** v0.4.6 the field-test capture line 562:
 
 ```
 Tool found: plistutil -> C:\Program Files\re-unpacker\bin\plistutil.exe
@@ -210,25 +336,25 @@ Cause: tools.py probes plistutil with no args; plistutil with no args waits for 
 
 Fix: added `plistutil` to `_NO_EXEC_PROBE_TOOLS` in `tools.py`. This existing mechanism (used for `msiexec` since v0.4.2) marks tools that should be existence-checked only, no exec probe. Version field now reads "installed" instead of the misleading stderr capture. The tool's actual functionality is verified by the extractors that use it.
 
-**Lesson L44:** modifying system-wide environment variables requires length validation, normalized idempotency checks, and a fallback discovery path that doesn't depend on the env var. The v0.4.6 Pass 0 well-known lookup is exactly that fallback path -- v0.4.7's PATH overflow guard relies on it.
+**** modifying system-wide environment variables requires length validation, normalized idempotency checks, and a fallback discovery path that doesn't depend on the env var. The v0.4.6 Pass 0 well-known lookup is exactly that fallback path -- v0.4.7's PATH overflow guard relies on it.
 
 **v0.4.0 architectural decisions and inventory unchanged.** v0.4.4 manual-install handler subsystem and v0.4.6 detection improvements are intact.
 
 ## [0.4.6] - Patch release (manual-install detection + handler accuracy fixes)
 
-Five bugs from the v0.4.5 Windows 11 Pro field test (testrun.txt, 491 lines, pid 8876 install + pid 6248 post-tools-check). The v0.4.4 manual-install handler subsystem itself was running correctly: 7 winget packages installed, 3 GitHub-release handlers extracted binaries successfully into `C:\Program Files\re-unpacker\bin\`. The bugs were in adjacent layers (detection, asset matching, output decoding) -- not the install pipeline.
+Five bugs from the v0.4.5 Windows 11 Pro field test. The v0.4.4 manual-install handler subsystem itself was running correctly: 7 winget packages installed, 3 GitHub-release handlers extracted binaries successfully into `C:\Program Files\re-unpacker\bin\`. The bugs were in adjacent layers (detection, asset matching, output decoding) -- not the install pipeline.
 
 **Bug DETECT-MANUAL-INSTALLS-01 (CRITICAL).** The user's log showed: line 311-317 ewftools extracted (5 .exe + 2 .dll), line 349-352 osslsigncode extracted (1 .exe + 3 .dll), line 358-384 pdfdetach extracted (1 .exe + 25 .dll) -- ALL into `C:\Program Files\re-unpacker\bin\` per the v0.4.4 design. Then line 408 starts a new Python process for the immediately-following `--tools-check`, and lines 419-420, 449, 450 report ewfexport, ewfinfo, osslsigncode, pdfdetach all MISSING. Root cause: Windows propagates HKLM PATH updates to new processes only after `WM_SETTINGCHANGE` broadcast, AND child processes of a still-running shell inherit the OLD PATH. The well-known directory probe in `_windows_well_known_lookup` didn't include the manual-install directory, so tools we installed couldn't be found unless the user opened a new shell.
 
-Fix: added Pass 0 to `_windows_well_known_lookup` that probes `C:\Program Files\re-unpacker\bin\` directly via a new `_re_unpacker_install_dirs()` helper. This Pass runs FIRST in the lookup chain and catches every tool the framework auto-installs, regardless of PATH propagation state. Lesson L41 captures the pattern.
+Fix: added Pass 0 to `_windows_well_known_lookup` that probes `C:\Program Files\re-unpacker\bin\` directly via a new `_re_unpacker_install_dirs()` helper. This Pass runs FIRST in the lookup chain and catches every tool the framework auto-installs, regardless of PATH propagation state.
 
 **Bug PLISTUTIL-WRONG-ASSET-01.** Line 389 of the v0.4.5 log: `Downloading https://github.com/libimobiledevice-win32/imobiledevice-net/releases/download/v1.3.17/libimobiledevice.1.2.1-r1122-osx-x64.zip`. The macOS asset! v0.4.4's plistutil handler used `asset_name_hint="x64"` which substring-matched `osx-x64` before reaching any `win-x64` asset. The handler downloaded a Mach-O archive, found no `plistutil.exe` inside, and reported failure -- a misleading symptom of a wrong-asset bug.
 
-Fix: changed `asset_name_hint` from `"x64"` to `"win-x64"` to specifically match the Windows asset variant. Lesson L42 captures the pattern: substring asset hints must include a platform discriminator, never just an architecture.
+Fix: changed `asset_name_hint` from `"x64"` to `"win-x64"` to specifically match the Windows asset variant.
 
 **Bug BINWALK-NOT-DETECTED-01.** Line 304: `Running: C:\Users\Administrator\AppData\Local\Programs\Python\Python312\python.exe -m pip install --upgrade binwalk`. pip ran for ~5 seconds (line 305 starts the next dispatch). pip places entry-point scripts at `<python_install_root>\Scripts\<tool>.exe`, which is on PATH only if Python's installer registered it AND only if the user has restarted their shell since. The v0.4.5 well-known lookup didn't probe Python Scripts dirs, so binwalk was reported MISSING.
 
-Fix: added Pass 6 to `_windows_well_known_lookup` via a new `_python_scripts_dirs()` helper that globs Python Scripts directories from BOTH system-wide locations (`%ProgramFiles%\Python*\Scripts\`) AND user-scope locations (`%LocalAppData%\Programs\Python\Python*\Scripts\`). Pass 6 handles every pip-installed CLI tool. Note: probing `%LocalAppData%\Programs\Python\` doesn't violate the user's "no AppData installs" rule from v0.4.4 Q1; we're not installing there, we're searching there for tools that pip's own infrastructure put there. Lesson L43 captures the pattern.
+Fix: added Pass 6 to `_windows_well_known_lookup` via a new `_python_scripts_dirs()` helper that globs Python Scripts directories from BOTH system-wide locations (`%ProgramFiles%\Python*\Scripts\`) AND user-scope locations (`%LocalAppData%\Programs\Python\Python*\Scripts\`). Pass 6 handles every pip-installed CLI tool. Note: probing `%LocalAppData%\Programs\Python\` doesn't violate the user's "no AppData installs" rule from v0.4.4 Q1; we're not installing there, we're searching there for tools that pip's own infrastructure put there.
 
 **Bug SIGCHECK-BOM-PERSISTS-01.** Line 273 and 468: `Tool found: sigcheck -> ... (version: ��)`. v0.4.4's BOM-stripping fix in `tools.py` was string-level, but subprocess output is decoded BEFORE my code runs -- with `errors='replace'`, raw `\xff\xfe` UTF-16 LE BOM bytes become `\ufffd\ufffd` (Unicode replacement characters), not `\ufeff`. The string-level strip looked for `\ufeff` and missed the replacement chars entirely.
 
@@ -247,13 +373,13 @@ The string-level `\ufeff` strip in tools.py is kept as belt-and-suspenders, plus
 
 Fix: when libewf is dispatched (for either `ewfinfo` or `ewfexport`), the handler is now called with `["ewfinfo", "ewfexport"]` in one go and returns results for both names. The `already_handled` set then blocks the second iteration's redundant download. This is a common pattern for handlers that produce multiple binaries from one asset.
 
-**Improvement: per-tool result logging (lesson L39 fulfillment).** v0.4.5's log showed only the `--- Manual install: X ---` headers; per-tool result (status + message) wasn't logged. Hard to diagnose remotely whether a handler succeeded, failed gracefully, or crashed. Now each result emits at INFO/WARNING/DEBUG depending on status: `[OK] <tool>: <message>` for success, `[FAIL] <tool>: <message>` for failure (with the actionable diagnostic), `[SKIP] <tool>: <message>` for upstream-unavailable / out-of-scope / not-yet-implemented. End-of-batch summary is now also written to the log file (was previously console-only via `print()`).
+**Improvement: per-tool result logging.** v0.4.5's log showed only the `--- Manual install: X ---` headers; per-tool result (status + message) wasn't logged. Hard to diagnose remotely whether a handler succeeded, failed gracefully, or crashed. Now each result emits at INFO/WARNING/DEBUG depending on status: `[OK] <tool>: <message>` for success, `[FAIL] <tool>: <message>` for failure (with the actionable diagnostic), `[SKIP] <tool>: <message>` for upstream-unavailable / out-of-scope / not-yet-implemented. End-of-batch summary is now also written to the log file (was previously console-only via `print()`).
 
 **Lessons captured:**
 
-- **L41**: tools installed by the framework must be discoverable independently of system PATH. PATH is fragile across process trees, shells, and OS broadcast timing; direct probing of the install dir is deterministic.
-- **L42**: substring asset-name hints must include a platform-discriminating substring (`"win-x64"`, not `"x64"`). Multi-platform releases are common and `"x64"` substring-matches them all.
-- **L43**: Python entry-point scripts (pip-installed binaries) need explicit probe-path coverage. Whether Python Scripts is on PATH depends on installer choices and shell restart state; probing the dir directly removes both dependencies.
+- Tools installed by the framework must be discoverable independently of system PATH. PATH is fragile across process trees, shells, and OS broadcast timing; direct probing of the install dir is deterministic.
+- Substring asset-name hints must include a platform-discriminating substring (`"win-x64"`, not `"x64"`). Multi-platform releases are common and `"x64"` substring-matches them all.
+- Python entry-point scripts (pip-installed binaries) need explicit probe-path coverage. Whether Python Scripts is on PATH depends on installer choices and shell restart state; probing the dir directly removes both dependencies.
 
 **v0.4.0 architectural decisions and inventory unchanged.** The v0.4.4 manual-install handler subsystem is intact: 8 working auto-installers, 28 honest-skip entries (libyal beyond ewf, ent, qemu-img, file), 3 out-of-scope entries (signtool, apksigner, apktool).
 
@@ -275,7 +401,7 @@ where it is not associated with a value
 ```python
 if is_windows():
     from .manual_install_windows import install_missing_tools_windows
-    from .tools import build_and_probe_registry  # <-- the bug
+    from .tools import build_and_probe_registry # <-- the bug
     post_winget_registry = build_and_probe_registry(logger=logger)
 ```
 
@@ -298,7 +424,7 @@ assert 'install_missing_tools_windows' in local_names, (
 
 This catches the exact failure mode at compile time rather than waiting for a Windows runtime trace.
 
-**Lesson L40:** local imports in Python shadow module-level bindings for the entire function. When adding a function-local import, scan the entire function body first for any prior reference to the same name. Default to module-level imports unless platform-gating requires lazy import.
+**** local imports in Python shadow module-level bindings for the entire function. When adding a function-local import, scan the entire function body first for any prior reference to the same name. Default to module-level imports unless platform-gating requires lazy import.
 
 **v0.4.4 manual-install handler subsystem is unchanged.** All 8 working auto-installers (binwalk, upx, ssdeep, osslsigncode, innoextract, ewfinfo+ewfexport, plistutil, pdfdetach), 28 honest-skip entries (libyal beyond ewf, ent, qemu-img, file), and 3 out-of-scope entries (signtool, apksigner, apktool) ship as designed in v0.4.4.
 
@@ -306,7 +432,7 @@ This catches the exact failure mode at compile time rather than waiting for a Wi
 
 ## [0.4.4] - Manual install handler subsystem (closes the v0.4.0/v0.4.x gap)
 
-Implements per-tool auto-install handlers for the ~30 Windows tools that have no winget Package ID. Through v0.4.3, those tools were skipped entirely by `--install`, leaving the user with a partial install batch and a manual install task list. v0.4.4 closes that gap with the scope explicitly confirmed by the user before implementation began (per the project's hard-rule L28 against shipping partial solutions on ambiguous scope).
+Implements per-tool auto-install handlers for the ~30 Windows tools that have no winget Package ID. Through v0.4.3, those tools were skipped entirely by `--install`, leaving the user with a partial install batch and a manual install task list. v0.4.4 closes that gap with the scope explicitly confirmed by the user before implementation began (per the project's hard rule against shipping partial solutions on ambiguous scope).
 
 **User-confirmed scope (Q&A from v0.4.3 release):**
 
@@ -337,7 +463,7 @@ The following 28 tools are skipped with explicit `"upstream publishes source-onl
 - `qemu-img`: requires custom installer handler for qemu.weilnetz.de Windows builds (not yet implemented; clear pointer in skip message)
 - `file`: ships with Git for Windows; pointer to `winget install Git.Git`
 
-**Out-of-scope per Q3:** `signtool`, `apksigner`, `apktool`.
+**Out-of-scope:** `signtool`, `apksigner`, `apktool`.
 
 **Architecture (`src/re_unpacker/manual_install_windows.py`, ~600 lines):**
 
@@ -361,17 +487,17 @@ The Linux apt path is unchanged. Existing test fixtures (Linux regression: schem
 
 **Bonus fix: sigcheck UTF-16 BOM mojibake.**
 
-The v0.4.3 testruncmd.txt log showed `Tool found: sigcheck -> ... (version: ��)` -- sigcheck.exe writes a UTF-16 BOM at the start of its console output, which when decoded as UTF-8 produced mojibake characters. Fixed in `tools.py` probe: `lstrip("\ufeff")` removes the Unicode BOM character; defensive byte-level BOM stripping handles raw-byte cases too. Lesson L38 captures the pattern.
+A Windows field-test capture showed `Tool found: sigcheck -> ... (version: ��)` -- sigcheck.exe writes a UTF-16 BOM at the start of its console output, which when decoded as UTF-8 produced mojibake characters. Fixed in `tools.py` probe: `lstrip("\ufeff")` removes the Unicode BOM character; defensive byte-level BOM stripping handles raw-byte cases too.
 
-**Lessons captured (`tasks/lessons.md`):**
+**Lessons captured:**
 
-- **L37**: Verify upstream binary distribution before promising auto-install. libyal projects are the canonical case: source-only releases mean no automatic install path exists. Honest "no upstream Windows binaries" skip is better than a silent 404 failure.
-- **L38**: Subprocess output decoding must handle Windows BOM. Tools like Sysinternals utilities emit BOM bytes; strip before parsing.
-- **L39**: When implementing graceful-failure mode, the failure must produce actionable diagnostic output. "binwalk install failed: HTTP 403 from PyPI; check network proxy or run `pip install binwalk` manually" is actionable; "binwalk install failed" is not. End-of-batch summary distinguishes succeeded / skipped / failed for clarity.
+- Verify upstream binary distribution before promising auto-install. libyal projects are the canonical case: source-only releases mean no automatic install path exists. Honest "no upstream Windows binaries" skip is better than a silent 404 failure.
+- Subprocess output decoding must handle Windows BOM. Tools like Sysinternals utilities emit BOM bytes; strip before parsing.
+- When implementing graceful-failure mode, the failure must produce actionable diagnostic output. "binwalk install failed: HTTP 403 from PyPI; check network proxy or run `pip install binwalk` manually" is actionable; "binwalk install failed" is not. End-of-batch summary distinguishes succeeded / skipped / failed for clarity.
 
 ## [0.4.3] - CRITICAL fix release (Windows 11 Pro field bugs, third round)
 
-Two field-reported bugs from a third Windows 11 Pro test run with v0.4.2. Lessons captured in `tasks/lessons.md` (L35 + L36). v0.4.0 architectural decisions and inventory unchanged.
+Two field-reported bugs from a third Windows 11 Pro test run with v0.4.2. v0.4.0 architectural decisions and inventory unchanged.
 
 **Bug WINGET-FLAG-01 (CRITICAL, blocking): `--accept-source-agreements` is invalid for `winget source update`.**
 
@@ -424,13 +550,13 @@ Implementing automatic installation for these requires a manual-install handler 
 - Where to install (user scope `%LOCALAPPDATA%\re-unpacker\bin\` vs machine scope `C:\Program Files\re-unpacker\bin\`)?
 - How to handle SDK requirements (signtool, apksigner) that genuinely cannot be auto-installed?
 
-Per the project's hard-rule L28 ("never assume; STOP and ask on ambiguous scope"), this is being explicitly scoped as v0.4.4 with user input rather than implemented partial in v0.4.3.
+Per the project's hard rule ("never assume; STOP and ask on ambiguous scope"), this is being explicitly scoped as v0.4.4 with user input rather than implemented partial in v0.4.3.
 
 **New Usage Guide playbooks:** 21.43 (winget source update flag error), 21.44 (winget portable package detection paths).
 
 ## [0.4.2] - Patch release (Windows 11 Pro field bugs, second round)
 
-Four bugs from a second Windows 11 Pro test run, plus one UX refinement. Lessons captured in `tasks/lessons.md` (L32 + L33 + L34). v0.4.0 architectural decisions and inventory unchanged.
+Four bugs from a second Windows 11 Pro test run, plus one UX refinement. v0.4.0 architectural decisions and inventory unchanged.
 
 **Bug MSI-PROBE-01: msiexec /? probe opens Windows Installer GUI dialog AND crashes with `os.killpg` AttributeError.**
 
@@ -446,7 +572,7 @@ Fix:
 
 **Bug POST-INSTALL-PATH-01: tools installed via winget not detected by subsequent --tools-check in the same process.**
 
-The user's testrun.txt log showed: after `re-unpacker.ps1 --install --yes` ran 7 winget installs successfully (7-Zip, ExifTool, GnuPG, PowerShell 7+, QPDF, Sigcheck, YARA), the immediately-following `--tools-check` reported all 7 still missing. Two compounding root causes:
+The user's the field-test capture log showed: after `re-unpacker.ps1 --install --yes` ran 7 winget installs successfully (7-Zip, ExifTool, GnuPG, PowerShell 7+, QPDF, Sigcheck, YARA), the immediately-following `--tools-check` reported all 7 still missing. Two compounding root causes:
 
 1. `os.environ['PATH']` is captured at Python process start; the winget `WM_SETTINGCHANGE` broadcast doesn't reach already-running Python processes.
 2. Several common winget packages don't auto-add to system PATH at all: 7-Zip installs to `C:\Program Files\7-Zip\`, GnuPG to `C:\Program Files (x86)\GnuPG\bin\`, Sysinternals/Sigcheck to varying locations, YARA paths vary by installer.
@@ -473,15 +599,15 @@ Empty-string entries in `TOOL_PACKAGE_HINTS_WINDOWS` (manual-install tools like 
 
 **UX: Microsoft.PowerShell wrongly recommended for install.**
 
-The user pointed out that the v0.4.1 install footer recommended installing `Microsoft.PowerShell` even though Windows PowerShell 5.1 (built into Windows 10+) was already detected. PowerShellAuthenticodeVerifier uses the `powershell` (5.1) command, not `pwsh` (7+); they're functionally interchangeable for re-unpacker's needs.
+The user pointed out that the v0.4.1 install footer recommended installing `Microsoft.PowerShell` even though Windows PowerShell 5.1 (built into Windows 10+) was already detected. PowerShellAuthenticodeVerifier uses the `powershell` (5.1) command, not `pwsh` (7+); they're functionally interchangeable for RE-Unpacker's needs.
 
 Fix: new `_OPTIONAL_ALTERNATIVES` mapping in `tools.py`:
 
 ```python
 _OPTIONAL_ALTERNATIVES = {
-    "pwsh":  "powershell",   # PowerShell 7+ optional when 5.1 is present
-    "7zz":   "7z",            # alternate name; same binary
-    "yarac": "yara",          # part of yara package; redundant if yara is present
+    "pwsh": "powershell", # PowerShell 7+ optional when 5.1 is present
+    "7zz": "7z", # alternate name; same binary
+    "yarac": "yara", # part of yara package; redundant if yara is present
 }
 ```
 
@@ -491,9 +617,9 @@ When a tool listed as a key has its alternative already detected, the tool is ex
 
 ## [0.4.1] - Patch release (Windows 11 Pro field bugs)
 
-Two bugs surfaced from a Windows 11 Pro field deployment of v0.4.0. Both fixed; lessons captured in `tasks/lessons.md` (L30 + L31). v0.4.0 architectural decisions and inventory unchanged; this is a patch-level release.
+Two bugs surfaced from a Windows 11 Pro field deployment of v0.4.0. Both fixed; v0.4.0 architectural decisions and inventory unchanged; this is a patch-level release.
 
-**Bug WIN-01: winget source not pre-initialized before install (rc=2147946800 / 0x80071130).**
+**Bug winget source not pre-initialized before install (rc=2147946800 / 0x80071130).**
 
 The user's first `--install` attempt on a fresh Windows 11 Pro install failed with `0x80071130 : Fast Cache data not found` after attempting to install VirusTotal.YARA. Root cause: `WingetBackend.install_packages()` did not run `winget source update` before the install loop, even though the class defined a `refresh_index: bool = True` field documenting the intent. AptBackend correctly runs `apt-get update` when `refresh_index=True`; the winget analog was never wired up. On freshly-provisioned Windows systems, winget's source cache isn't populated and the first install fails before reaching the actual download step.
 
@@ -505,19 +631,19 @@ Fix:
 
 **Bug HELP-01: --help missing platform-aware concrete examples.**
 
-The user reported "the help and instructional information does not provide indication of execution of the re-unpacker script against a target directory or file." Root cause: argparse `description` was one terse sentence; `_EPILOG` examples used `./re-unpacker sample.deb` (Linux bash invocation) only with no Windows equivalents; bare-invocation error gave no example at all.
+The user reported "the help and instructional information does not provide indication of execution of the RE-Unpacker script against a target directory or file." Root cause: argparse `description` was one terse sentence; `_EPILOG` examples used `./re-unpacker sample.deb` (Linux bash invocation) only with no Windows equivalents; bare-invocation error gave no example at all.
 
 Fix:
 
 - argparse `description` now includes the explicit instruction "Pass a file or directory as the first argument; see Examples below for concrete invocations on each platform."
 - `_EPILOG` now leads with a "Quick start" block showing all four invocation paths (Linux/macOS bash, Windows PowerShell, Windows cmd.exe, direct python). The Examples section now includes a Windows PowerShell example (`.\re-unpacker.ps1 C:\samples\firmware.bin -o C:\scratch\out`).
-- Bare-invocation error now embeds a literal example: `Pass a file or directory as the first argument, e.g.:\n\n  ./re-unpacker sample.deb` (Linux) or `.\re-unpacker.ps1 sample.cab` (Windows). The example is platform-aware via `platform_compat.is_windows()`.
+- Bare-invocation error now embeds a literal example: `Pass a file or directory as the first argument, e.g.:\n\n ./re-unpacker sample.deb` (Linux) or `.\re-unpacker.ps1 sample.cab` (Windows). The example is platform-aware via `platform_compat.is_windows()`.
 
 **New Usage Guide playbook 21.39: winget --install fails with 0x80071130 "Fast Cache data not found".** Walks through the symptom, the root cause, the v0.4.1 auto-refresh fix, and three manual remediation steps if the auto-refresh doesn't resolve the issue.
 
 ## [0.4.0] - Windows-tandem release (cross-platform Python)
 
-Significant feature release. Brings re-unpacker to Windows as a tandem platform alongside Linux, using a single cross-platform Python codebase with runtime platform detection. **Manifest schema unchanged at 1.1.0**: a Linux v0.3.2 manifest and a Windows v0.4.0 manifest are byte-interchangeable for downstream tooling.
+Significant feature release. Brings RE-Unpacker to Windows as a tandem platform alongside Linux, using a single cross-platform Python codebase with runtime platform detection. **Manifest schema unchanged at 1.1.0**: a Linux v0.3.2 manifest and a Windows v0.4.0 manifest are byte-interchangeable for downstream tooling.
 
 **Architectural delta vs v0.3.2**
 
@@ -654,12 +780,12 @@ Per locked-in design decision, the human-readable summary now includes a full "S
 **6 new CLI flags.**
 
 ```
---no-yara              Skip YARA rule matching pass
---no-fuzzy-hash        Skip ssdeep + TLSH fuzzy hash computation
---no-exif              Skip exiftool metadata extraction
---no-entropy           Skip Shannon entropy computation
---yara-rules PATH      Bypass auto-discovery; load rules from PATH only
---enrich-timeout SEC   Per-pass per-file timeout (default: 30s)
+--no-yara Skip YARA rule matching pass
+--no-fuzzy-hash Skip ssdeep + TLSH fuzzy hash computation
+--no-exif Skip exiftool metadata extraction
+--no-entropy Skip Shannon entropy computation
+--yara-rules PATH Bypass auto-discovery; load rules from PATH only
+--enrich-timeout SEC Per-pass per-file timeout (default: 30s)
 ```
 
 **Tool registry expanded 82 -- 93 tools.** New entries: gpg, gpgv, debsigs, dpkg-sig, debsums, apksigner, osslsigncode, exiftool, ssdeep, yara, ent. Plus 3 new Python bindings tracked: python3-tlsh, python3-yara, python3-ssdeep.
@@ -678,7 +804,7 @@ Including byte-identical regression on the canonical v0.1.x nested archive (22 f
 
 Five issues caught during v0.3.0 deployment to a real Kali Linux rig (kernel 6.19.11-1kali1, 2026-04-09). All five fixes are scoped narrowly: no schema change, no functionality regressions, no new extractors. Subsystem B (verification) is rescoped to v0.3.2 to make room.
 
-**ISS-001: Default file logging for non-extract modes.**
+**Default file logging for non-extract modes.**
 
 The five non-extract modes (`--tools-check`, `--install`, `--uninstall`, `--repair`, `--dry-run-install`) previously logged only to stderr. Output was lost as soon as the terminal scrolled. v0.3.1 adds a default per-invocation file log:
 
@@ -688,7 +814,7 @@ The five non-extract modes (`--tools-check`, `--install`, `--uninstall`, `--repa
 
 (or `$XDG_CACHE_HOME/re-unpacker/logs/...` when XDG_CACHE_HOME is set). The directory is created on first use with mode 0700. Each mode prints a one-line banner showing the resolved path. File logging is best-effort: an unwritable path falls back to console-only with a warning, never aborts the run.
 
-**ISS-002: New `--log-file PATH` flag.**
+**New `--log-file PATH` flag.**
 
 Operators can now specify an explicit log file path. Behavior:
 
@@ -697,16 +823,16 @@ Operators can now specify an explicit log file path. Behavior:
 - `--log-file -` disables file logging entirely.
 - Parent directories are created with mode 0700 if missing.
 
-**ISS-003: Wrong / missing package hints corrected.**
+**Wrong / missing package hints corrected.**
 
 - `smrawinfo` hint dropped: `libsmraw-utils` does NOT ship `smrawinfo`. The package provides `smrawmount` and `smrawverify`. v0.3.1 tracks `smrawverify` as the correct companion to `smrawmount`.
 - `libfsfat-utils` documented as a known-unavailable package via the new `KNOWN_UNAVAILABLE_PACKAGES` constant. The package is not currently shipped by Debian / Kali / Ubuntu stable. The `--install` path now logs an INFO-level message with the upstream-tracking link instead of failing the install batch with a generic warning.
 
-**ISS-004: Expanded `_VERSION_PROBES` -- no more "(version: unknown)".**
+**Expanded `_VERSION_PROBES` -- no more "(version: unknown)".**
 
 The version-probe dictionary covered only 33 of 82 tracked tools, leaving the rest displaying "(version: unknown)" in `--tools-check` output. v0.3.1 expands the dictionary to 82 explicit entries (full coverage; libyal `*mount` / `*info` tools use `-V`, DOS-era / minimal tools probe with no args, etc.) and adds an "installed" sentinel fallback for any tool present on PATH but yielding no parseable version output. Result: zero tools display "(version: unknown)" on a fully-installed Kali rig.
 
-**ISS-005: New `-v` / `-vv` / `-q` verbosity shortcuts.**
+**New `-v` / `-vv` / `-q` verbosity shortcuts.**
 
 Conventional Unix-style verbosity flags. `-v` -> INFO (default), `-vv` -> DEBUG, `-q` / `--quiet` -> WARNING. `-v` and `-q` are mutually exclusive (argparse mutex group). `--log-level` overrides both with a clear warning logged.
 
@@ -837,7 +963,7 @@ The production target is Kali Linux. Full Kali installs ship the upstream libyal
 
 ## [0.1.0] - initial release
 
-[0.4.10]: https://github.com/Sandler73/RE-Unpacker/releases/tag/v0.4.10
+[0.5.0]: https://github.com/Sandler73/RE-Unpacker/releases/tag/v0.5.0
 [0.4.9]: https://github.com/Sandler73/RE-Unpacker/releases/tag/v0.4.9
 [0.4.8]: https://github.com/Sandler73/RE-Unpacker/releases/tag/v0.4.8
 [0.4.7]: https://github.com/Sandler73/RE-Unpacker/releases/tag/v0.4.7
