@@ -326,3 +326,17 @@ yarn-error.log*
 # to modify this file.
 *.local.*
 .local/
+
+# -----------------------------------------------------------------------------
+# Internal development tracking (never published)
+# -----------------------------------------------------------------------------
+# tasks/ holds the working plan, engineering log, and field-test transcripts.
+# It is development and tracking state, not a deliverable, and may reference
+# other projects, test environments, and people. It must never be committed.
+tasks/
+*.todo.md
+*.lessons.md
+
+# Field-test captures and local run transcripts.
+testrun*.txt
+testrun*.log
