@@ -49,8 +49,8 @@
 
 .NOTES
     Requires Python 3.10+ on PATH.
-    Author: Anthropic / re-unpacker contributors.
-    Version: 0.4.10
+    Author: re-unpacker contributors.
+    Version: 0.5.0
 
 .LINK
     See README.md and ReUnpacker-Usage-Guide.html for full documentation.
