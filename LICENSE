@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 Ryan
+Copyright (c) 2026 Sandler73 (re-unpacker contributors)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +19,146 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+===============================================================================
+SUPPLEMENTAL TERMS
+===============================================================================
+
+The MIT License above is the governing license for this Software. The
+supplemental sections below do not restrict, narrow, or override the rights
+granted by the MIT License. They are provided to make the parties' intent
+explicit for a security-focused reverse-engineering tool, and to state the
+expectations and limitations under which the Software is distributed. Where
+any supplemental section could be read to conflict with the MIT License, the
+MIT License controls.
+
+-------------------------------------------------------------------------------
+1. NO WARRANTY; DISCLAIMER
+-------------------------------------------------------------------------------
+
+The Software is a triage and extraction utility that operates on untrusted,
+potentially malicious input. It is provided on an "AS IS" and "AS AVAILABLE"
+basis without warranties or conditions of any kind, whether express, implied,
+statutory, or otherwise. Without limiting the MIT disclaimer above, the
+authors and copyright holders specifically disclaim any implied warranties of
+merchantability, fitness for a particular purpose, title, accuracy,
+completeness, quiet enjoyment, and non-infringement.
+
+The authors do not warrant that the Software will be uninterrupted,
+error-free, secure, or free of harmful components; that defects will be
+corrected; or that extraction, detection, classification, or verification
+results are accurate, complete, or suitable for any particular purpose. Any
+reliance placed on the Software's output is strictly at the user's own risk.
+
+-------------------------------------------------------------------------------
+2. LIMITATION OF LIABILITY
+-------------------------------------------------------------------------------
+
+To the maximum extent permitted by applicable law, in no event shall the
+authors, copyright holders, or contributors be liable for any direct,
+indirect, incidental, special, exemplary, punitive, or consequential damages
+of any kind, including without limitation damages for loss of data, loss of
+profits, business interruption, corruption or loss of files, compromise of
+systems, or procurement of substitute goods or services, however caused and
+under any theory of liability (whether in contract, strict liability, tort
+including negligence, or otherwise), arising in any way out of the use of or
+inability to use the Software, even if advised of the possibility of such
+damages. This limitation applies regardless of the failure of essential
+purpose of any limited remedy.
+
+-------------------------------------------------------------------------------
+3. INDEMNIFICATION
+-------------------------------------------------------------------------------
+
+You agree to indemnify, defend, and hold harmless the authors, copyright
+holders, and contributors from and against any and all claims, liabilities,
+damages, losses, costs, and expenses (including reasonable legal fees) arising
+out of or in any way connected with: (a) your use, misuse, modification, or
+distribution of the Software; (b) your violation of these terms or of any
+applicable law, regulation, contract, or third-party right; or (c) any content
+or artifacts you extract, analyze, store, or transmit using the Software. This
+obligation survives termination and continues to apply after you cease using
+the Software.
+
+-------------------------------------------------------------------------------
+4. ACCEPTABLE USE
+-------------------------------------------------------------------------------
+
+The Software is intended for lawful reverse-engineering, security research,
+digital forensics, incident response, malware triage, and software-supply-chain
+inspection performed by qualified professionals. You are solely responsible
+for ensuring that your use is authorized.
+
+You must not use the Software to:
+
+  (a) access, extract from, or analyze systems, packages, disk images, or
+      files that you do not own or lack explicit authorization to examine;
+
+  (b) infringe intellectual-property rights, circumvent technical protection
+      measures in violation of applicable law, or breach a license or contract
+      that governs the input you provide to the Software;
+
+  (c) violate any applicable law, regulation, or export control; or
+
+  (d) develop, stage, or distribute malicious software, or otherwise cause
+      harm to systems, data, or persons.
+
+Because the Software extracts and executes external system binaries against
+adversarial input, run it only in an environment you are authorized to use and
+that is appropriately isolated for the analysis of untrusted content.
+
+-------------------------------------------------------------------------------
+5. SECURITY
+-------------------------------------------------------------------------------
+
+The Software processes untrusted input by design. Although it implements
+defensive controls (argv-only subprocess execution with no shell
+interpolation, per-extractor timeouts, bounded output capture, path-traversal
+auditing with quarantine, and byte and file-count quotas), no software can
+guarantee complete safety when handling adversarial artifacts.
+
+You are responsible for operating the Software in a suitably hardened and
+isolated environment (for example, a disposable analysis virtual machine or
+container without access to sensitive networks or data). Extracted content may
+itself be malicious; you are responsible for handling, storing, and disposing
+of extracted artifacts securely.
+
+Security vulnerabilities in the Software should be reported privately in
+accordance with the project's SECURITY.md rather than via public issues.
+
+-------------------------------------------------------------------------------
+6. COMPLIANCE
+-------------------------------------------------------------------------------
+
+You are solely responsible for ensuring that your use of the Software complies
+with all laws, regulations, standards, and contractual obligations applicable
+to you and your jurisdiction. This includes, without limitation, computer-fraud
+and unauthorized-access statutes, data-protection and privacy regulations,
+intellectual-property law, and applicable export-control and sanctions regimes.
+
+The Software is provided without any representation or warranty of regulatory,
+standards, or certification compliance. Nothing in this license constitutes
+legal advice. If you are uncertain whether a particular use is lawful or
+authorized, obtain your own legal and compliance guidance before proceeding.
+
+-------------------------------------------------------------------------------
+7. THIRD-PARTY COMPONENTS
+-------------------------------------------------------------------------------
+
+The Software has no bundled runtime third-party code; it invokes external
+system binaries (for example dpkg-deb, 7-Zip, cabextract, binwalk, qpdf, yara,
+exiftool, gpg, and the libyal toolset) that are installed and licensed
+separately. Those tools are governed by their own licenses, and you are
+responsible for complying with them. The authors of this Software make no
+representations regarding third-party tools and disclaim all liability arising
+from their use.
+
+-------------------------------------------------------------------------------
+8. SEVERABILITY; SURVIVAL
+-------------------------------------------------------------------------------
+
+If any provision of these supplemental terms is held unenforceable, that
+provision shall be modified only to the minimum extent necessary to make it
+enforceable, and the remaining provisions shall remain in full force and
+effect. Sections 1 through 3, 5, and 6 survive any termination of your rights
+under this license.
