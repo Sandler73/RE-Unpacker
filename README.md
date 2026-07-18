@@ -21,6 +21,7 @@
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20Windows-lightgrey.svg)](#install)
 [![License](https://img.shields.io/github/license/Sandler73/RE-Unpacker?color=green)](LICENSE)
+<img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="MIT License">
 [![Runtime deps](https://img.shields.io/badge/runtime%20deps-none-brightgreen.svg)](pyproject.toml)
 [![Code style](https://img.shields.io/badge/lint-ruff-black.svg)](https://docs.astral.sh/ruff/)
 [![Formats](https://img.shields.io/badge/formats-70%20extractable%20kinds-blue.svg)](#supported-formats)
