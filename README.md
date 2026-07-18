@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/images/RE-Unpacker-header.png" alt="RE-Unpacker" width="50%" />
+</p>
+
 <div align="center">
 
 # re-unpacker
