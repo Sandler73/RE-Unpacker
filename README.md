@@ -784,4 +784,4 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and uses
 odometer versioning: each component is a single digit that rolls over into the
 one above it, so the release after 0.4.9 is 0.5.0 and there is no 0.4.10.
 The current release
-is **0.4.8**; see the changelog for every entry back to 0.1.0.
+is **0.5.0**; see the changelog for every entry back to 0.1.0.
