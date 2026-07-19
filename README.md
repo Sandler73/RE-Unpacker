@@ -678,47 +678,6 @@ self-contained and render in any browser.
 
 ---
 
-## Contributing
-
-Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for the
-development setup, the extractor / verifier / classifier authoring patterns,
-the coding standards (including the hard no-em-dash rule and the header-block
-convention), and the pull-request checklist. All participation is governed by
-the [Code of Conduct](CODE_OF_CONDUCT.md). Security issues must be reported
-privately per [SECURITY.md](SECURITY.md), never via public issues.
-
----
-
-## License
-
-RE-Unpacker is released under the [MIT License](LICENSE). The LICENSE file also
-carries supplemental terms (disclaimer of warranty, limitation of liability,
-indemnification, acceptable use, security, and compliance) that make explicit
-the expectations for a security-focused reverse-engineering tool that operates
-on untrusted, potentially malicious input. Those supplemental sections do not
-narrow the rights granted by the MIT License; where any could be read to
-conflict, the MIT License controls.
-
-RE-Unpacker ships no bundled third-party runtime code. It invokes external
-system binaries (dpkg-deb, 7-Zip, binwalk, qpdf, yara, exiftool, gpg, the
-libyal toolset, and others) that are installed and licensed separately under
-their own terms.
-
-## Changelog
-
-The complete, versioned history lives in [CHANGELOG.md](CHANGELOG.md), which
-follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and uses
-odometer versioning: each component is a single digit that rolls over into the
-one above it, so the release after 0.4.9 is 0.5.0 and there is no 0.4.10.
-The current release
-is **0.4.8**; see the changelog for every entry back to 0.1.0.
-
-### Recursion engine
-
-BFS work queue of `(path, depth, source_archive, source_archive_sha256, rel_path)`. Dedup is by SHA-256 of the file contents -- a byte-identical archive appearing twice in the input is extracted once. Worker threads (`-j N`) share the queue, the dedup set, and the manifest; all access is lock-protected. Manifest writes are line-buffered JSONL so an interrupted run still has a valid partial record.
-
----
-
 ## Documentation
 
 The full documentation set lives in two places: Markdown guides under `docs/`
