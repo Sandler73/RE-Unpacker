@@ -29,8 +29,6 @@
   <a href="#supported-formats"><img alt="Formats" src="https://img.shields.io/badge/formats-70%20extractable%20kinds-blue.svg"></a>
 </p>
 
-**Current release: 0.5.0** -- this release adopts odometer versioning, in which each version component is a single digit that rolls over into the one above it; the release after 0.4.9 is therefore 0.5.0. It folds in the source-header normalization across all 52 modules, the removal of release annotations from code and documentation, and a repository hygiene pass. No change to extraction behavior. See [CHANGELOG.md](CHANGELOG.md) for the complete history from 0.1.0 onward. The manifest schema is **1.1.0** and is byte-compatible across Linux and Windows.
-
 Hand it a file or a directory and it will pull apart every package, installer, archive, filesystem image, compressed stream, and packed binary it can recognize -- recursively, until it hits bedrock -- and write a structured tree plus a manifest describing everything it found.
 
 Designed for the modified Kali Linux RE workflow on Linux and a winget-managed PowerShell workflow on Windows: zero external Python dependencies, all extraction is performed via well-known system binaries.
@@ -64,13 +62,6 @@ Designed for the modified Kali Linux RE workflow on Linux and a winget-managed P
 | FileEntry fields | 25 |
 | RunStats counters | 20 |
 | Manifest schema version | 1.1.0 (byte-identical Linux / Windows manifests) |
-
-**HTML companion documentation:** richly-formatted README and Usage Guide live in `docs/`:
-
-- `docs/ReUnpacker-README.html` -- mirrors this README with a styled, navigable layout.
-- `docs/ReUnpacker-Usage-Guide.html` -- procedural, recipe-driven handbook covering every CLI mode, every workflow, and every troubleshooting playbook. The companion document to read alongside the README.
-
-Both are self-contained (no external CSS / JS / fonts) and render in any browser. Open them with `xdg-open docs/ReUnpacker-README.html` (Linux) or just point a browser at the file.
 
 ---
 
